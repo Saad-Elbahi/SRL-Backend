@@ -1,0 +1,9 @@
+--
+-- SELECT * FROM `node_consultation`
+-- WHERE node_bordereau_type='BLOC'
+--   AND ID NOT IN (SELECT node_consultation_id FROM ligne_consultation);
+--
+-- SELECT * FROM `sous_bloc_consultation` WHERE node_consultation_id=632;
+--
+-- SELECT * FROM `sous_bloc_st` WHERE ID NOT IN (SELECT sous_bloc_id FROM ligne_sous_traitance);
+--

@@ -1,0 +1,146 @@
+# 1 Import Unite
+GET {{paramsCmdHost}}/import/unite
+Authorization: Bearer {{auth_token}}
+###
+@paramsCmdHost = variable value
+
+# 2 Import Ville
+GET {{paramsCmdHost}}/import/city
+Authorization: Bearer {{auth_token}}
+###
+
+# 3 Import Pays
+GET {{paramsCmdHost}}/import/country
+Authorization: Bearer {{auth_token}}
+###
+
+# 4 Import bank
+GET {{paramsCmdHost}}/import/bank
+Authorization: Bearer {{auth_token}}
+###
+@paramsQueryHost = variable value
+
+# 5 Ville par intitule
+GET {{paramsQueryHost}}/byIntitule/dakhla
+Authorization: Bearer {{auth_token}}
+###
+@subContractorCmdHost = variable value
+
+# 6 Import Sub Contractor by ville
+GET {{subContractorCmdHost}}/import/275927e2-e541-49c0-9e95-beab5bc5e3a9
+Authorization: Bearer {{auth_token}}
+###
+@marcheCmdHost = variable value
+
+
+#7 Import Marche
+GET {{marcheCmdHost}}/imports
+Authorization: Bearer {{auth_token}}
+###
+@marcheQueryHost = variable value
+
+
+#8 get Marche by num
+GET {{marcheQueryHost}}/byStatus/EN_COURS
+Authorization: Bearer {{auth_token}}
+###
+
+#9 Import Lot by Marche
+GET {{nodeCmdHost}}/import/58/lot
+Authorization: Bearer {{auth_token}}
+###
+
+#10 Import Sous Lot by Marche
+GET {{nodeCmdHost}}/import/58/sous_lot
+Authorization: Bearer {{auth_token}}
+###
+@nodeCmdHost = variable value
+@auth_token = variable value
+
+#11 Import Section by Marche
+GET {{nodeCmdHost}}/import/58/section
+Authorization: Bearer {{auth_token}}
+###
+
+# 12 Import Sous Section by Marche
+GET {{nodeCmdHost}}/import/58/sous_section
+Authorization: Bearer {{auth_token}}
+###
+@articleCmdHost = variable value
+
+#13 Import Articles by Marche
+GET {{articleCmdHost}}/import/58
+Authorization: Bearer {{auth_token}}
+###
+
+# 14 Nodes bordereau by marche
+GET {{nodeQueryHost}}/byMarche/58
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+#Lots bordereau by marche
+GET {{soustraitanceQueryHost}}/allLot/bc380a9a-ed38-4c5d-89f0-7684c435a057
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+#Nodes IN bordereau by marche
+GET {{nodeQueryHost}}/inBordereauByMarche/1
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+#Nodes OUT bordereau by marche
+GET {{nodeQueryHost}}/outBordereauByMarche/6699c3c5-d2da-4d63-a4ae-9c0258ae2ea
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+# Create on Sous traitances by Marche Prison Tamsna
+GET {{soustraitanceQueryHost}}/createByMarche/d14a1880-fd66-4b8a-90bc-8c5b937e81e9
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+# All Sous traitances
+GET {{soustraitanceQueryHost}}/noarchives
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+# Sous Traitanc by Id
+GET {{soustraitanceQueryHost}}/byId/200a8713-81e9-4621-b807-37d88aa5e3aa
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+# Delete Sous Traitanc by Id
+DELETE {{soustraitanceCmdHost}}/delete/f1d51fe8-ef4d-4a57-a716-c16314e0f46a
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+# Delete All Sous Traitanc
+GET {{soustraitanceCmdHost}}/deleteAll
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+
+# updateAll
+GET {{logCmdHost}}/updateAll
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+
+# logsByUserId
+GET {{logQueryHost}}/logsByUserId/58
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+###
+
+
+
+
