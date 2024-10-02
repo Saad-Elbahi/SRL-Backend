@@ -1,6 +1,7 @@
 package ma.srmanager.srjwt.controller.commands;
 
 import lombok.extern.slf4j.Slf4j;
+
 import ma.srmanager.coreapi.base.SrResponseMessage;
 import ma.srmanager.coreapi.jwt.*;
 import ma.srmanager.srjwt.entities.AppRole;

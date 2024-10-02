@@ -1,0 +1,19 @@
+package ma.srmanager.srjwt.coreapi.enums.caisse;
+
+public enum LigneRegistreCaisseStatus {
+    DRAFT,
+    VALIDATION_DGA_PENDING,
+    REJECTED_DGA,
+    VALIDATION_CDG_PENDING,
+    REJECTED_CDG,
+    VALIDATION_MR_PENDING,
+    REJECTED_MR,
+    VALIDATION_CH_ZONE_PENDING,
+    REJECTED_CH_ZONE,
+    DELIVERY_PENDING,
+    SENTED,
+    DELIVERED,
+    UNDELIVERED,
+    RESEND,
+    COLLECT,
+}

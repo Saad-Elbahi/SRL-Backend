@@ -1,6 +1,7 @@
 package ma.srmanager.srjwt.services;
 
 
+
 import ma.srmanager.coreapi.base.SrResponseMessage;
 import ma.srmanager.coreapi.jwt.*;
 import ma.srmanager.srjwt.entities.AppRole;
@@ -41,7 +42,7 @@ public interface AccountCmdService {
 
     AppUser turnOffOrOnUser(TurnOffOrOnUserDTO dto);
 
-    SrResponseMessage initPwd(String username,String token);
+    SrResponseMessage initPwd(String username, String token);
 
     String initAllPwd();
 

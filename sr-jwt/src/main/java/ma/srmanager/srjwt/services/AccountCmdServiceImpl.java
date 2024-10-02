@@ -7,9 +7,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.coreapi.base.SrResponseMessage;
-import ma.srmanager.coreapi.base.SrUtils;
+
 import ma.srmanager.coreapi.jwt.*;
 import ma.srmanager.coreapi.mail.MailSendDTO;
+import ma.srmanager.srjwt.coreapi.base.SrUtils;
+import ma.srmanager.srjwt.coreapi.jwt.*;
 import ma.srmanager.srjwt.entities.AppRole;
 import ma.srmanager.srjwt.entities.AppUser;
 import ma.srmanager.srjwt.repositories.AppRoleRepository;

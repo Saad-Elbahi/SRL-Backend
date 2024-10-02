@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ma.srmanager.coreapi.jwt.TypeRole;
+import ma.srmanager.srjwt.coreapi.jwt.TypeRole;
 
 import javax.persistence.*;
 
