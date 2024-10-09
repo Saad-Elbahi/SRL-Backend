@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
 import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
+import ma.srmanager.srmouvementv.dto.UpdateMouvementDTO;
 import ma.srmanager.srmouvementv.model.*;
 import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,6 +152,14 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
         if (!success) {
             logger.warning("Failed to process route for IMEI: " + imei + " on date: " + date);
         }
+    }
+
+    @Override
+    public VehiculeRoute updateMouvement(UpdateMouvementDTO dto) {
+        VehiculeRoute vehiculeRoute=vehiculeRouteRepository.findById(dto.getId())
+                .orElseThrow(()->new EntityNotFoundException("VehiculeRoute with Id "+dto.getRouteLength()+"not found "));
+        vehiculeRoute.setRouteLength(dto.getRouteLength());
+        return vehiculeRouteRepository.save(vehiculeRoute);
     }
 
     @Transactional

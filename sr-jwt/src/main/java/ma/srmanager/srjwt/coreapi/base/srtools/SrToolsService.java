@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public interface SrToolsService {
 
-    String bigDecimaltoLetter(BigDecimal num);
+  //  String bigDecimaltoLetter(BigDecimal num);
 
     String doubleToLetterFr(double nombre);
 

@@ -23,5 +23,7 @@ public class Fournisseur  {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name="vertices",nullable=false)
+    private String vertices;
 
 }

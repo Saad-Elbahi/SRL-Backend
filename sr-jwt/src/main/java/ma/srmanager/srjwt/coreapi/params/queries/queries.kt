@@ -1,6 +1,7 @@
 package ma.srmanager.coreapi.params.queries
 
-import ma.srmanager.coreapi.enums.global.ParamType
+import ma.srmanager.srjwt.coreapi.enums.global.ParamType
+
 
 data class GetParamsByTypeQuery(
     var paramType: ParamType

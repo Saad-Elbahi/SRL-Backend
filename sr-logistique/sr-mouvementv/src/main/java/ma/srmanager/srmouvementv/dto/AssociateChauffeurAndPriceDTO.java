@@ -7,4 +7,8 @@ public class AssociateChauffeurAndPriceDTO {
     private Long vehiculeId;
     private Long chauffeurId;
     private double costPerKm;
+    private String model;
+    private String name;
+    private String device;
+    private String plateNumber;
 }

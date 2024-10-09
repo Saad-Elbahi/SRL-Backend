@@ -5,11 +5,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.ibm.icu.text.NumberFormat;
-import com.ibm.icu.text.RuleBasedNumberFormat;
-import com.ibm.icu.util.ULocale;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.coreapi.jwt.JWTUtil;
+import ma.srmanager.srjwt.coreapi.jwt.JWTUtil;
+import org.springframework.format.annotation.NumberFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -605,7 +603,7 @@ public class SrToolsServiceImpl implements SrToolsService {
     }
 
 
-    private static final DecimalFormat DFORMAT = new DecimalFormat("###0.00");
+   /* private static final DecimalFormat DFORMAT = new DecimalFormat("###0.00");
     private static final NumberFormat FORMATTER = new RuleBasedNumberFormat(ULocale.FRANCE,RuleBasedNumberFormat.SPELLOUT);
 
     @Override
@@ -631,5 +629,5 @@ public class SrToolsServiceImpl implements SrToolsService {
         //log.info(result);
         return result;
     }
-
+*/
 }
