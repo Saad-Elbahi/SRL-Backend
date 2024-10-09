@@ -56,6 +56,7 @@ public class FournisseurServiceImpl implements FournisseurService {
                     Fournisseur fournisseur = new Fournisseur();
                     fournisseur.setGroupName(fournisseurData.get("group_name").asText());
                     fournisseur.setName(fournisseurData.get("name").asText());
+                    fournisseur.setVertices(fournisseurData.get("vertices").asText());
                     fournisseurs.add(fournisseur);
                 }
             }

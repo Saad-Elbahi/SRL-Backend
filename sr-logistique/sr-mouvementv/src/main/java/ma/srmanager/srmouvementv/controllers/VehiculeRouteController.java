@@ -3,19 +3,18 @@ package ma.srmanager.srmouvementv.controllers;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.dto.AssociateFromToRequestDTO;
-import ma.srmanager.srmouvementv.dto.ImputationRequestDTO;
-import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
-import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
+import ma.srmanager.srmouvementv.dto.*;
 import ma.srmanager.srmouvementv.model.TripImputation;
 import ma.srmanager.srmouvementv.model.VehiculeRoute;
 import ma.srmanager.srmouvementv.repositories.TripImputationRepository;
 import ma.srmanager.srmouvementv.services.VehiculeRouteService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -92,8 +91,13 @@ public class VehiculeRouteController {
             return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
         }
     }
+    @PutMapping("/updateMouvement")
+    public ResponseEntity<VehiculeRoute> updateMouvement(@RequestBody UpdateMouvementDTO dto) {
+        VehiculeRoute updatedRoute = vehiculeRouteService.updateMouvement(dto);
+        return ResponseEntity.ok(updatedRoute);
+    }
 
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 05 11 * * ?")
     public void scheduleFetchAndSaveYesterdayRoutes() {
         fetchAndSaveYesterdayRoutes();
         System.out.println("Routes fetched and saved successfully for yesterday (scheduled task)");

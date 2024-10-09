@@ -1,7 +1,7 @@
 package ma.srmanager.srmouvementv.security;
 
 public  class JwtTools {
-        public static final String JWT_SECRET = "SrM@n@ger";
+        public static final String JWT_SECRET = "L@@k00d@@y";
         public static final String JWT_HEADER_NAME = "Authorization";
         public static final String JWT_PREFEX_COMPTE = "COMPTE_";
         public static final String JWT_HEADER_PREFIX = "Bearer ";

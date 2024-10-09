@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.extern.slf4j.Slf4j;
+import ma.srmanager.srmouvementv.dto.AssociateChauffeurAndPriceDTO;
 import ma.srmanager.srmouvementv.model.Chauffeur;
 import ma.srmanager.srmouvementv.model.VehiculeGpsLocation;
 import ma.srmanager.srmouvementv.repositories.ChauffeurRepository;
@@ -30,14 +31,14 @@ public class VehiculeGpsLocationServiceImpl implements VehiculeGpsLocationServic
     @Autowired
     private VehiculeGpsLocationRepository vehiculeGpsLocationRepository;
     @Autowired
-    private  RestTemplate restTemplate;
+    private RestTemplate restTemplate;
     @Autowired
-    private  ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     @Autowired
     private ChauffeurRepository chauffeurRepository;
 
-    private static final  String gpsApiKey = "88918E46B26489F0ECDC7966541FE2A9";
-    private static final  String gpsBaseUrl = "https://rouandigps.com/api/api.php";
+    private static final String gpsApiKey = "88918E46B26489F0ECDC7966541FE2A9";
+    private static final String gpsBaseUrl = "https://rouandigps.com/api/api.php";
 
     private void configureObjectMapper() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -86,7 +87,7 @@ public class VehiculeGpsLocationServiceImpl implements VehiculeGpsLocationServic
             if (matcher.find()) {
                 String name = locationData.get("name").asText();
                 // Check if a VehiculeGpsLocation with the same name and group name already exists
-                List<VehiculeGpsLocation> existingLocation = vehiculeGpsLocationRepository.findByNameAndGroupName(name,groupName);
+                List<VehiculeGpsLocation> existingLocation = vehiculeGpsLocationRepository.findByNameAndGroupName(name, groupName);
                 if (existingLocation.isEmpty()) {
                     VehiculeGpsLocation vehiculeGpsLocation = objectMapper.convertValue(locationData, VehiculeGpsLocation.class);
                     vehiculeGpsLocations.add(vehiculeGpsLocation);
@@ -98,16 +99,23 @@ public class VehiculeGpsLocationServiceImpl implements VehiculeGpsLocationServic
     }
 
     @Override
-    public VehiculeGpsLocation associateChauffeurAndPrice(Long vehiculeId, Long chauffeurId, Double costPerKm) {
-        VehiculeGpsLocation vehiculeGpsLocation = vehiculeGpsLocationRepository.findById(vehiculeId)
-                .orElseThrow(() -> new EntityNotFoundException("VehiculeGpsLocation with ID " + vehiculeId + " not found."));
+    public VehiculeGpsLocation associateChauffeurAndPrice(AssociateChauffeurAndPriceDTO dto) {
+        // Fetch VehiculeGpsLocation by vehiculeId
+        VehiculeGpsLocation vehiculeGpsLocation = vehiculeGpsLocationRepository.findById(dto.getVehiculeId())
+                .orElseThrow(() -> new EntityNotFoundException("VehiculeGpsLocation with ID " + dto.getVehiculeId() + " not found."));
 
-        Chauffeur chauffeur = chauffeurRepository.findById(chauffeurId)
-                .orElseThrow(() -> new EntityNotFoundException("Chauffeur with ID " + chauffeurId + " not found."));
+        // Fetch Chauffeur by chauffeurId
+        Chauffeur chauffeur = chauffeurRepository.findById(dto.getChauffeurId())
+                .orElseThrow(() -> new EntityNotFoundException("Chauffeur with ID " + dto.getChauffeurId() + " not found."));
 
+        // Associate Chauffeur and update other fields
         vehiculeGpsLocation.setChauffeur(chauffeur);
-        vehiculeGpsLocation.setCostPerKm(costPerKm);
+        vehiculeGpsLocation.setCostPerKm(dto.getCostPerKm());
+        vehiculeGpsLocation.setModel(dto.getModel());
+        vehiculeGpsLocation.setName(dto.getName()); // Updating name field
+        vehiculeGpsLocation.setDevice(dto.getDevice()); // Updating device
 
+        // Save and return the updated entity
         return vehiculeGpsLocationRepository.save(vehiculeGpsLocation);
     }
 
@@ -124,9 +132,37 @@ public class VehiculeGpsLocationServiceImpl implements VehiculeGpsLocationServic
         return vehiculeGpsLocationRepository.findAll();
     }
 
+    @Transactional
     @Override
-    public void deleteVehicule(Long id) {
-        vehiculeGpsLocationRepository.deleteById(id);
+    public VehiculeGpsLocation updateVehiculeGpsLocation(Long vehiculeId, VehiculeGpsLocation updatedVehiculeGpsLocation) {
+        // Fetch the existing VehiculeGpsLocation from the database
+        VehiculeGpsLocation existingVehiculeGpsLocation = vehiculeGpsLocationRepository.findById(vehiculeId)
+                .orElseThrow(() -> new EntityNotFoundException("VehiculeGpsLocation with ID " + vehiculeId + " not found."));
+
+        // Update fields of the existing VehiculeGpsLocation
+        existingVehiculeGpsLocation.setGroupName(updatedVehiculeGpsLocation.getGroupName());
+        existingVehiculeGpsLocation.setImei(updatedVehiculeGpsLocation.getImei());
+        existingVehiculeGpsLocation.setName(updatedVehiculeGpsLocation.getName());
+        existingVehiculeGpsLocation.setDevice(updatedVehiculeGpsLocation.getDevice());
+        existingVehiculeGpsLocation.setModel(updatedVehiculeGpsLocation.getModel());
+        existingVehiculeGpsLocation.setPlateNumber(updatedVehiculeGpsLocation.getPlateNumber());
+        existingVehiculeGpsLocation.setCostPerKm(updatedVehiculeGpsLocation.getCostPerKm());
+
+        // Update chauffeur if provided
+        if (updatedVehiculeGpsLocation.getChauffeur() != null) {
+            Chauffeur updatedChauffeur = chauffeurRepository.findById(updatedVehiculeGpsLocation.getChauffeur().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Chauffeur with ID " + updatedVehiculeGpsLocation.getChauffeur().getId() + " not found."));
+            existingVehiculeGpsLocation.setChauffeur(updatedChauffeur);
+        }
+
+        // Save and return the updated VehiculeGpsLocation
+        return vehiculeGpsLocationRepository.save(existingVehiculeGpsLocation);
+    }
+
+
+    @Override
+    public void deleteVehicule(Long vehiculeId) {
+        vehiculeGpsLocationRepository.deleteById(vehiculeId);
     }
 
 }
