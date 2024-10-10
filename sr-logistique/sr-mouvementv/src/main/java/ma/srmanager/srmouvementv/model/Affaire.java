@@ -21,4 +21,6 @@ public class Affaire {
     private String intitule;
     private String typeProjet;
     private String villeintitule;
+    private String chefZoneFullName;
+    private String chefZoneUsername;
 }

@@ -2,8 +2,13 @@ package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ma.srmanager.srmouvementv.dto.AffaireDTO;
+import ma.srmanager.srmouvementv.dto.AssociateChauffeurAndPriceDTO;
 import ma.srmanager.srmouvementv.model.Affaire;
+import ma.srmanager.srmouvementv.model.VehiculeGpsLocation;
 import ma.srmanager.srmouvementv.services.AffaireService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -44,8 +49,22 @@ public class AffaireController {
         affaireService.deleteAffaire(id);
     }*/
     @GetMapping("/affaires")
-    public List<Affaire> getProjets(@RequestHeader(name="Authorization") String token) throws IOException {
+    public List<Affaire> getAffaire(@RequestHeader(name="Authorization") String token) throws IOException {
         log.info(token);
         return affaireService.getALLAffaire(token);
     }
+    @PutMapping("/updateAffaire")
+    public ResponseEntity<Void> updateAffaire(@RequestBody AffaireDTO affaireDTO) throws IOException {
+        try {
+            affaireService.UpdateAffaire(affaireDTO);
+            return ResponseEntity.ok().build();
+        } catch (NumberFormatException e) {
+            log.error("Invalid format: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
