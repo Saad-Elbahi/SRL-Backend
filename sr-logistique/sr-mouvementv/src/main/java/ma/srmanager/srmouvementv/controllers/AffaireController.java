@@ -1,6 +1,7 @@
 package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.model.Affaire;
 import ma.srmanager.srmouvementv.services.AffaireService;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +12,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/affaireapi")
 @AllArgsConstructor
+@Slf4j
 public class AffaireController {
 
     private AffaireService affaireService;
 
-
+/*
     @GetMapping("/getAllAffaire")
     public List<Affaire> getAllAffaire() {
         return affaireService.getAllAffaire();
@@ -40,5 +42,10 @@ public class AffaireController {
     @DeleteMapping("/deleteAffaire/{id}")
     public void deleteAffaire(@PathVariable Long id) {
         affaireService.deleteAffaire(id);
+    }*/
+    @GetMapping("/affaires")
+    public List<Affaire> getProjets(@RequestHeader(name="Authorization") String token) throws IOException {
+        log.info(token);
+        return affaireService.getALLAffaire(token);
     }
 }
