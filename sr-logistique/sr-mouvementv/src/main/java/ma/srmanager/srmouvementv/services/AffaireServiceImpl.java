@@ -3,6 +3,7 @@ package ma.srmanager.srmouvementv.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ma.srmanager.srmouvementv.dto.AffaireDTO;
 import ma.srmanager.srmouvementv.model.Affaire;
 import ma.srmanager.srmouvementv.repositories.AffaireRepository;
 import org.springframework.http.HttpEntity;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
@@ -73,6 +75,17 @@ public class AffaireServiceImpl implements AffaireService {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public Affaire UpdateAffaire(AffaireDTO affaireDTO) {
+        Affaire affaire = affaireRepository.findById(affaireDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Affaire with ID" + affaireDTO.getId() + "Not fouand"));
+        affaire.setCode(affaireDTO.getCode());
+        affaire.setVilleintitule(affaireDTO.getVilleintitule());
+        affaire.setChefZoneUsername(affaireDTO.getChefZoneUsername());
+        affaire.setChefZoneFullName(affaireDTO.getChefZoneFullName());
+        return affaireRepository.save(affaire);
     }
 
 //    @Transactional
