@@ -8,6 +8,6 @@ import java.util.Optional;
 
 
 public interface AffaireRepository extends JpaRepository<Affaire, Long> {
-    Optional<Affaire> findByNameAndGroupName(String name, String groupName);
+  //  Optional<Affaire> findByNameAndGroupName(String code, String intitule);
 
 }

@@ -136,7 +136,7 @@ public class VehiculeRouteController {
 
         Map<String, Double> costPerAffaire = imputations.stream()
                 .collect(Collectors.groupingBy(
-                        imputation -> imputation.getAffaire().getName(), // Assuming Affaire has a getName() method
+                        imputation -> imputation.getAffaire().getCode(), // Assuming Affaire has a getName() method
                         Collectors.summingDouble(TripImputation::getCostImputation)
                 ));
 

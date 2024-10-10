@@ -16,11 +16,9 @@ public class Affaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "group_name", nullable = false)
-    private String groupName;
-
-    @Column(name = "name", nullable = false)
-    private String name;
-    
+    private String code;
+    @Lob
+    private String intitule;
+    private String typeProjet;
+    private String villeintitule;
 }
