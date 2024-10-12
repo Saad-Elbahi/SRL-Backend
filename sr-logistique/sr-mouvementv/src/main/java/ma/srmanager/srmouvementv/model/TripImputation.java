@@ -27,9 +27,11 @@ public class TripImputation {
 
     @Column(name = "observation")
     private String observation;
+    @ManyToOne
+    private Client client;
 
-    @Column(name = "departement")
-    private String departement;
+    @ManyToOne
+    private Lot lot;
 
     @Column(name = "cost_imputation")
     private Double costImputation;
@@ -44,7 +46,7 @@ public class TripImputation {
         if (this.vehiculeRoute != null && this.fillingPercentage != null) {
             this.costImputation = this.vehiculeRoute.getCostPerTrip() * (this.fillingPercentage / 100);
         } else {
-            this.costImputation = 0.0; // Default value or handle as needed
+            this.costImputation = 0.0;
         }
     }
 
