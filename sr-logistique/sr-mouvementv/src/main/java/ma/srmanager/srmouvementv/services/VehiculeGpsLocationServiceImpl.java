@@ -82,7 +82,6 @@ public class VehiculeGpsLocationServiceImpl implements VehiculeGpsLocationServic
 
         for (JsonNode locationData : jsonData) {
             String groupName = locationData.get("group_name").asText();
-            // Check if the group name matches the pattern
             Matcher matcher = pattern.matcher(groupName);
             if (matcher.find()) {
                 String name = locationData.get("name").asText();
@@ -100,22 +99,19 @@ public class VehiculeGpsLocationServiceImpl implements VehiculeGpsLocationServic
 
     @Override
     public VehiculeGpsLocation associateChauffeurAndPrice(AssociateChauffeurAndPriceDTO dto) {
-        // Fetch VehiculeGpsLocation by vehiculeId
+
         VehiculeGpsLocation vehiculeGpsLocation = vehiculeGpsLocationRepository.findById(dto.getVehiculeId())
                 .orElseThrow(() -> new EntityNotFoundException("VehiculeGpsLocation with ID " + dto.getVehiculeId() + " not found."));
 
-        // Fetch Chauffeur by chauffeurId
         Chauffeur chauffeur = chauffeurRepository.findById(dto.getChauffeurId())
                 .orElseThrow(() -> new EntityNotFoundException("Chauffeur with ID " + dto.getChauffeurId() + " not found."));
-
-        // Associate Chauffeur and update other fields
         vehiculeGpsLocation.setChauffeur(chauffeur);
         vehiculeGpsLocation.setCostPerKm(dto.getCostPerKm());
         vehiculeGpsLocation.setModel(dto.getModel());
-        vehiculeGpsLocation.setName(dto.getName()); // Updating name field
-        vehiculeGpsLocation.setDevice(dto.getDevice()); // Updating device
+        vehiculeGpsLocation.setName(dto.getName());
+        vehiculeGpsLocation.setDevice(dto.getDevice());
 
-        // Save and return the updated entity
+
         return vehiculeGpsLocationRepository.save(vehiculeGpsLocation);
     }
 
