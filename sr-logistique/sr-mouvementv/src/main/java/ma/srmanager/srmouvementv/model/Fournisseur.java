@@ -16,14 +16,11 @@ public class Fournisseur  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "group_name", nullable = false)
-    private String groupName;
-
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name="vertices",nullable=false)
-    private String vertices;
-
+    private String abbreviationFournisseur;
+    private String intituleFournisseur;
+    private String adresseFournisseur;
+    private String ice;
+    private String email;
+    private String telephone;
+    private String contact;
 }

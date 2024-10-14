@@ -8,6 +8,5 @@ import java.util.Optional;
 
 
 public interface FournisseurRepository extends JpaRepository<Fournisseur,Long > {
-    List<Fournisseur> findByNameAndGroupName(String name, String groupName);
 
 }
