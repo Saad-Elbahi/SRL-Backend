@@ -92,10 +92,12 @@ public class VehiculeRouteController {
         }
     }
     @PutMapping("/updateMouvement")
-    public ResponseEntity<VehiculeRoute> updateMouvement(@RequestBody UpdateMouvementDTO dto) {
-        VehiculeRoute updatedRoute = vehiculeRouteService.updateMouvement(dto);
-        return ResponseEntity.ok(updatedRoute);
+    public ResponseEntity<List<VehiculeRoute>> updateMouvement(@RequestBody UpdateMouvementDTO dto) {
+        vehiculeRouteService.updateMouvement(dto);  // Update the specific route
+        List<VehiculeRoute> allRoutes = vehiculeRouteService.getAllVehiculeRoutes();
+        return ResponseEntity.ok(allRoutes);
     }
+
 
     @Scheduled(cron = "0 05 11 * * ?")
     public void scheduleFetchAndSaveYesterdayRoutes() {
