@@ -1,6 +1,7 @@
 package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
+import ma.srmanager.srmouvementv.model.FromMouvement;
 import ma.srmanager.srmouvementv.model.TripImputation;
 import ma.srmanager.srmouvementv.services.TripImputationService;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,12 @@ import java.util.List;
 public class TripImputationController {
 
     private final TripImputationService tripImputationService;
+
+    @GetMapping("/allImputation")
+    public ResponseEntity<List<TripImputation>> getAllImputation() {
+        List<TripImputation> imputations = tripImputationService.getAllImputations();
+        return ResponseEntity.ok(imputations);
+    }
 
     @GetMapping("/imputationByVehiculeRoute/{vehiculeRouteId}")
     public List<TripImputation> getimputationByVehiculeRouteId(@PathVariable Long vehiculeRouteId) {

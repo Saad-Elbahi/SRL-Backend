@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -84,7 +85,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim(JwtTools.JWT_CLAIMS_ROLES, user.getAuthorities()
                         .stream()
-                        .map(ga -> ga.getAuthority())
+                        .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
                 .sign(algo1);
 

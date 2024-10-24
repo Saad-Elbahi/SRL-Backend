@@ -3,18 +3,22 @@ package ma.srmanager.srmouvementv.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
-import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
-import ma.srmanager.srmouvementv.dto.UpdateMouvementDTO;
+import ma.srmanager.srmouvementv.dto.*;
 import ma.srmanager.srmouvementv.model.*;
 import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,17 +44,23 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     @Autowired
     private FromMouvementRepository fromMouvementRepository;
     @Autowired
-    private  TripImputationRepository tripImputationRepository;
+    private TripImputationRepository tripImputationRepository;
     @Autowired
-    private  RestTemplate restTemplate;
+    private SoustraitantRepository soustraitantRepository;
     @Autowired
-    private  ObjectMapper objectMapper;
+    private LotRepository lotRepository;
+    @Autowired
+    private ClientRepository clientRepository;
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private static final Logger logger = Logger.getLogger(VehiculeGpsLocationServiceImpl.class.getName());
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final  String fileUploadDir = System.getProperty("user.home") + "/Apps/sr-manager/RESSOURCES/data/assets/images/";
-    private static final  String gpsApiKey = "88918E46B26489F0ECDC7966541FE2A9";
-    private static final  String gpsBaseUrl = "https://rouandigps.com/api/api.php";
+    private static final String fileUploadDir = System.getProperty("user.home") + "/Apps/sr-manager/RESSOURCES/data/assets/images/";
+    private static final String gpsApiKey = "88918E46B26489F0ECDC7966541FE2A9";
+    private static final String gpsBaseUrl = "https://rouandigps.com/api/api.php";
 
     @Transactional
     @Override
@@ -79,7 +89,7 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
 
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             for (VehiculeGpsLocation vehicle : allVehicles) {
-                log.info("Fetch and save Route VH==>"+vehicle.getName());
+                log.info("Fetch and save Route VH==>" + vehicle.getName());
                 fetchAndSaveRouteForVehicle(vehicle, date);
             }
         }
@@ -92,7 +102,7 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
 
         String imei = vehicle.getImei();
         String apiUrl = String.format("%s?api=user&key=%s&cmd=OBJECT_GET_ROUTE,%s,%s,%s,1",
-                gpsBaseUrl,gpsApiKey, imei, startDateTime.format(formatter), endDateTime.format(formatter));
+                gpsBaseUrl, gpsApiKey, imei, startDateTime.format(formatter), endDateTime.format(formatter));
 
         boolean success = false;
         int attempts = 0;
@@ -156,56 +166,102 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
 
     @Override
     public VehiculeRoute updateMouvement(UpdateMouvementDTO dto) {
-        VehiculeRoute vehiculeRoute=vehiculeRouteRepository.findById(dto.getId())
-                .orElseThrow(()->new EntityNotFoundException("VehiculeRoute with Id "+dto.getRouteLength()+"not found "));
+        VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(dto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute with Id " + dto.getRouteLength() + "not found "));
         vehiculeRoute.setRouteLength(dto.getRouteLength());
         return vehiculeRouteRepository.save(vehiculeRoute);
     }
 
-    @Transactional
-    @Override
-    public VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvement> fromMouvements) {
+    /*    @Transactional
+        @Override
+        public VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvement> fromMouvements) {
 
-        // Retrieve the VehiculeRoute for the given vehiculeRouteId
-        VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(vehiculeRouteId)
-                .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
+            // Retrieve the VehiculeRoute for the given vehiculeRouteId
+            VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(vehiculeRouteId)
+                    .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
 
-        if (fromMouvements != null && !fromMouvements.isEmpty()) {
-            // Clear existing FromMouvements associated with the route
-            vehiculeRoute.getFromMouvements().clear();
+            if (fromMouvements != null && !fromMouvements.isEmpty()) {
+                // Clear existing FromMouvements associated with the route
+                vehiculeRoute.getFromMouvements().clear();
 
-            for (FromMouvement fromMouvement : fromMouvements) {
-                // Ensure that FromMouvement has either an Affaire or a Fournisseur, but not both
-                if (fromMouvement.getAffaire() != null && fromMouvement.getFournisseur() != null) {
-                    throw new IllegalArgumentException("FromMouvement cannot have both an Affaire and a Fournisseur at the same time");
-                }
+                for (FromMouvement fromMouvement : fromMouvements) {
+                    // Ensure that FromMouvement has either an Affaire or a Fournisseur, but not both
+                    if (fromMouvement.getAffaire() != null && fromMouvement.getFournisseur() != null) {
+                        throw new IllegalArgumentException("FromMouvement cannot have both an Affaire and a Fournisseur at the same time");
+                    }
 
-                // Handle Affaire association
-                if (fromMouvement.getAffaire() != null) {
-                    Affaire fullAffaire = affaireRepository.findById(fromMouvement.getAffaire().getId())
-                            .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
-                    fromMouvement.setAffaire(fullAffaire);
-                }
+                    // Handle Affaire association
+                    if (fromMouvement.getAffaire() != null) {
+                        Affaire fullAffaire = affaireRepository.findById(fromMouvement.getAffaire().getId())
+                                .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
+                        fromMouvement.setAffaire(fullAffaire);
+                    }
 
-                // Handle Fournisseur association
-                if (fromMouvement.getFournisseur() != null) {
-                    Fournisseur fullFournisseur = fournisseurRepository.findById(fromMouvement.getFournisseur().getId())
-                            .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
-                    fromMouvement.setFournisseur(fullFournisseur);
-                }
+                    // Handle Fournisseur association
+                    if (fromMouvement.getFournisseur() != null) {
+                        Fournisseur fullFournisseur = fournisseurRepository.findById(fromMouvement.getFournisseur().getId())
+                                .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
+                        fromMouvement.setFournisseur(fullFournisseur);
+                    }
 
-                // Set the VehiculeGpsLocation and VehiculeRoute for the FromMouvement
-                fromMouvement.setVehiculeGpsLocation(vehiculeRoute.getVehiculeGpsLocation());
-                fromMouvement.setVehiculeRoute(vehiculeRoute);
+                    // Set the VehiculeGpsLocation and VehiculeRoute for the FromMouvement
+                    fromMouvement.setVehiculeGpsLocation(vehiculeRoute.getVehiculeGpsLocation());
+                    fromMouvement.setVehiculeRoute(vehiculeRoute);
 
-                // Handle the 'to' Affaire association for this specific FromMouvement
+                   *//* // Handle the 'to' Affaire association for this specific FromMouvement
                 if (fromMouvement.getToAffaire() != null) {
                     Affaire toAffaire = affaireRepository.findById(fromMouvement.getToAffaire().getId())
                             .orElseThrow(() -> new EntityNotFoundException("To Affaire not found"));
                     fromMouvement.setToAffaire(toAffaire);
                 }
-
+*//*
                 // Save and associate the FromMouvement with the VehiculeRoute
+                FromMouvement savedFromMouvement = fromMouvementRepository.save(fromMouvement);
+                vehiculeRoute.addFromMouvement(savedFromMouvement);
+            }
+        }
+
+        // Save and return the updated VehiculeRoute
+        return vehiculeRouteRepository.save(vehiculeRoute);
+    }*/
+    @Transactional
+    @Override
+    public VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements) {
+
+        VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(vehiculeRouteId)
+                .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
+
+        if (fromMouvements != null && !fromMouvements.isEmpty()) {
+            vehiculeRoute.getFromMouvements().clear();
+
+            for (FromMouvementUpdateDTO fromMouvementDTO : fromMouvements) {
+                FromMouvement fromMouvement = new FromMouvement();
+
+                if (fromMouvementDTO.getAffaire() != null && fromMouvementDTO.getFournisseur() != null) {
+                    throw new IllegalArgumentException("FromMouvement cannot have both an Affaire and a Fournisseur at the same time");
+                }
+
+                if (fromMouvementDTO.getAffaire() != null) {
+                    Affaire fullAffaire = affaireRepository.findById(fromMouvementDTO.getAffaire().getId())
+                            .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
+                    fromMouvement.setAffaire(fullAffaire);
+                }
+
+                if (fromMouvementDTO.getFournisseur() != null) {
+                    Fournisseur fullFournisseur = fournisseurRepository.findById(fromMouvementDTO.getFournisseur().getId())
+                            .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
+                    fromMouvement.setFournisseur(fullFournisseur);
+                }
+
+                fromMouvement.setVehiculeGpsLocation(vehiculeRoute.getVehiculeGpsLocation());
+                fromMouvement.setVehiculeRoute(vehiculeRoute);
+
+
+                fromMouvement.setBl(fromMouvementDTO.getBl());
+                fromMouvement.setBlMontant(fromMouvementDTO.getBlMontant());
+                fromMouvement.setDateBl(fromMouvementDTO.getDateBl());
+
+
                 FromMouvement savedFromMouvement = fromMouvementRepository.save(fromMouvement);
                 vehiculeRoute.addFromMouvement(savedFromMouvement);
             }
@@ -215,33 +271,93 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
         return vehiculeRouteRepository.save(vehiculeRoute);
     }
 
+    //file storage
+   /* public String storeFile(MultipartFile file) {
+        // Define the directory where files will be uploaded
+        String uploadDir = System.getProperty("user.home") + "/Apps/sr-manager/RESSOURCES/data/assets/file/";
+
+        // Ensure the directory exists, create it if not
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            try {
+                Files.createDirectories(uploadPath);
+            } catch (IOException ex) {
+                throw new RuntimeException("Could not create directory: " + uploadDir, ex);
+            }
+        }
+
+        // Clean the file name and define the target file path
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Path filePath = uploadPath.resolve(fileName);
+
+        try {
+            // Copy the file to the target directory, replacing any existing file with the same name
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return filePath.toString();  // Return the full file path for storing in the entity
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to store file: " + fileName, ex);
+        }
+    }*/
+
     //service Association Imputation
     @Transactional
     @Override
-    public VehiculeRoute associateImputation(Long vehiculeRouteId, List<TripImputation> imputations) {
-        VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(vehiculeRouteId)
+    public VehiculeRoute associateImputation(ImputationRequestDTO dto) {
+        VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(dto.getVehiculeRouteId())
                 .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
 
-        if (imputations != null && !imputations.isEmpty()) {
-            // Clear existing imputations
+        if (!dto.getImputations().isEmpty()) {
             vehiculeRoute.getImputations().clear();
 
-            // Associate imputations with VehiculeRoute
-            for (TripImputation imputation : imputations) {
+            List<TripImputation> updatedImputations = new ArrayList<>();
+
+            for (TripImputationDTO imputationDTO : dto.getImputations()) {
+                TripImputation imputation = new TripImputation();
                 imputation.setVehiculeRoute(vehiculeRoute);
 
-                if (imputation.getAffaire() != null) {
-                    Affaire affaire = affaireRepository.findById(imputation.getAffaire().getId())
+                if (imputationDTO.getAffaireId() != null) {
+                    Affaire affaire = affaireRepository.findById(imputationDTO.getAffaireId())
                             .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
                     imputation.setAffaire(affaire);
+                } else {
+                    System.err.println("Affaire ID is null for imputation: " + imputationDTO);
                 }
 
-                vehiculeRoute.getImputations().add(tripImputationRepository.save(imputation));
+                if (imputationDTO.getClientId() != null) {
+                    Client client = clientRepository.findById(imputationDTO.getClientId())
+                            .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+                    imputation.setClient(client);
+                }
+
+                if (imputationDTO.getLotId() != null) {
+                    Lot lot = lotRepository.findById(imputationDTO.getLotId())
+                            .orElseThrow(() -> new EntityNotFoundException("Lot not found"));
+                    imputation.setLot(lot);
+                }
+
+                if (imputationDTO.getSoustraitantId() != null) {
+                    Soustraitant soustraitant = soustraitantRepository.findById(imputationDTO.getSoustraitantId())
+                            .orElseThrow(() -> new EntityNotFoundException("Soustraitant not found"));
+                    imputation.setSoustraitant(soustraitant);
+                }
+
+                imputation.setId(imputationDTO.getId());
+                imputation.setFillingPercentage(imputationDTO.getFillingPercentage());
+                imputation.setObservation(imputationDTO.getObservation());
+                imputation.setCostImputation(imputationDTO.getCostImputation());
+
+                updatedImputations.add(imputation);
             }
+
+            List<TripImputation> savedImputations = tripImputationRepository.saveAll(updatedImputations);
+
+            vehiculeRoute.getImputations().addAll(savedImputations);
         }
 
         return vehiculeRouteRepository.save(vehiculeRoute);
     }
+
+
 
     @Override
     public void deleteVehiculeroute(Long id) {
@@ -318,6 +434,7 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
                         LinkedHashMap::new // Maintain order after sorting
                 ));
     }
+
     @Override
     public List<Object[]> getTotalCostPerTripByMonth() {
         return vehiculeRouteRepository.getTotalCostPerTripByMonth();
@@ -401,7 +518,7 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
             // Update the filling percentage and automatically calculate filling cost
             existingRoute.setFillingPercentage(dto.getFillingPercentage());
 
-            if (existingRoute.getCostPerTrip() >0 && dto.getFillingPercentage()>0) {
+            if (existingRoute.getCostPerTrip() > 0 && dto.getFillingPercentage() > 0) {
                 existingRoute.setFillingCost(existingRoute.getCostPerTrip() * (dto.getFillingPercentage() / 100));
             } else {
                 existingRoute.setFillingCost((double) 0);
@@ -412,9 +529,8 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
         } catch (EntityNotFoundException e) {
             log.info(e.getMessage());
         }
-        return  vehiculeRouteRepository.findAll();
+        return vehiculeRouteRepository.findAll();
     }
-
 
 
 }

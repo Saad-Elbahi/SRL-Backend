@@ -7,6 +7,7 @@ import ma.srmanager.srmouvementv.services.FromMouvementService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,11 +20,14 @@ public class FromMouvementController {
 
     private final FromMouvementService fromMouvementService;
 
-    //Utiliserun DTO
-    @PostMapping
-    public ResponseEntity<FromMouvement> createFromMouvement(@RequestBody FromMouvement fromMouvement) {
-        FromMouvement savedFromMouvement = fromMouvementService.save(fromMouvement);
-        return ResponseEntity.ok(savedFromMouvement);
+    @PostMapping("/create")
+    public ResponseEntity<FromMouvement> createFromMouvement(@RequestBody FromMouvementUpdateDTO dto) {
+        try {
+            FromMouvement savedFromMouvement = fromMouvementService.save(dto);
+            return new ResponseEntity<>(savedFromMouvement, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/FromMouvement/{id}")
@@ -43,19 +47,21 @@ public class FromMouvementController {
         fromMouvementService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/byVehiculeRoute/{vehiculeRouteId}")
     public List<FromMouvement> getFromMouvementsByVehiculeRouteId(@PathVariable Long vehiculeRouteId) {
         return fromMouvementService.getFromMouvementsByVehiculeRouteId(vehiculeRouteId);
     }
 
-    @PutMapping("/updateFrom")
+    @PutMapping("/update")
     public ResponseEntity<FromMouvement> updateFromMouvement(@RequestBody FromMouvementUpdateDTO dto) {
         try {
-            FromMouvement updatedEntity = fromMouvementService.updateFromMouvement(dto);
-            return new ResponseEntity<>(updatedEntity, HttpStatus.OK);
+            FromMouvement updatedFromMouvement = fromMouvementService.updateFromMouvement(dto);
+            return new ResponseEntity<>(updatedFromMouvement, HttpStatus.OK);
         } catch (IOException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }

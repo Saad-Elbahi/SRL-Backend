@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.*;
-import ma.srmanager.srmouvementv.model.TripImputation;
-import ma.srmanager.srmouvementv.model.VehiculeRoute;
+import ma.srmanager.srmouvementv.model.*;
 import ma.srmanager.srmouvementv.repositories.TripImputationRepository;
 import ma.srmanager.srmouvementv.services.VehiculeRouteService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/vhrouteapi")
 @AllArgsConstructor
 @Slf4j
+
 public class VehiculeRouteController {
 
 
@@ -44,24 +44,31 @@ public class VehiculeRouteController {
 
     @PostMapping("/associateFromTo")
     public ResponseEntity<VehiculeRoute> associateFromMouvementsAndTo(@RequestBody AssociateFromToRequestDTO request) {
-
-        // Call the service method with the updated parameters
         VehiculeRoute vehiculeRoute = vehiculeRouteService.associateFromMouvementsAndTo(
                 request.getVehiculeRouteId(),
                 request.getFromMouvements()
         );
-
-        // Return the updated VehiculeRoute in the response
         return ResponseEntity.ok(vehiculeRoute);
     }
+
+
 
 
     // Controller for associateImputation
     @PostMapping("/associateImputation")
     public ResponseEntity<VehiculeRoute> associateImputation(@RequestBody ImputationRequestDTO imputationRequestDTO) {
+        try {
 
-        VehiculeRoute vehiculeRoute = vehiculeRouteService.associateImputation(imputationRequestDTO.getVehiculeRouteId(), imputationRequestDTO.getImputations());
-        return ResponseEntity.ok(vehiculeRoute);
+            VehiculeRoute vehiculeRoute = vehiculeRouteService.associateImputation(imputationRequestDTO);
+
+            return ResponseEntity.ok(vehiculeRoute);
+        } catch (EntityNotFoundException e) {
+            log.error("Entity not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            log.error("An error occurred: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 
@@ -91,6 +98,7 @@ public class VehiculeRouteController {
             return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
         }
     }
+
     @PutMapping("/updateMouvement")
     public ResponseEntity<List<VehiculeRoute>> updateMouvement(@RequestBody UpdateMouvementDTO dto) {
         vehiculeRouteService.updateMouvement(dto);  // Update the specific route
@@ -156,8 +164,8 @@ public class VehiculeRouteController {
     @PutMapping("/updateFillingPercentage")
     public List<VehiculeRoute> updateFillingPercentage(@RequestBody UpdateFillingPercentageDTO dto) {
         log.info("updateFillingPercentage ==> 1");
-        log.info("Vh ==> "+dto.getVehiculeRouteId());
-        log.info("% ==> "+dto.getFillingPercentage());
+        log.info("Vh ==> " + dto.getVehiculeRouteId());
+        log.info("% ==> " + dto.getFillingPercentage());
         return vehiculeRouteService.updateFillingPercentage(dto);
         //return ResponseEntity.ok(updatedRoute);
     }

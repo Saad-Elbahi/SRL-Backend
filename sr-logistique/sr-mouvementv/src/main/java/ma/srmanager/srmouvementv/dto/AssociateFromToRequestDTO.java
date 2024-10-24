@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class AssociateFromToRequestDTO {
     private Long vehiculeRouteId;
-    private List<FromMouvement> fromMouvements;
+    private List<FromMouvementUpdateDTO> fromMouvements;
 }
