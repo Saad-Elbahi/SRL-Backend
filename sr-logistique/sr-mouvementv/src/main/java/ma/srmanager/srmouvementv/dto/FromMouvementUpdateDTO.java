@@ -3,6 +3,8 @@ package ma.srmanager.srmouvementv.dto;
 import lombok.Data;
 import ma.srmanager.srmouvementv.model.Affaire;
 import ma.srmanager.srmouvementv.model.Fournisseur;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 @Data
@@ -12,7 +14,9 @@ public class FromMouvementUpdateDTO {
     private Fournisseur fournisseur;
     private String bl;
     private Double blMontant;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateBl;
-    private String departement;
-    private Affaire toAffaire;
+
+
+
 }

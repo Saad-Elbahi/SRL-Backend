@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Setter
@@ -18,7 +19,7 @@ public class TripImputation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "affaire_id", nullable = false)
     private Affaire affaire;
 
@@ -32,6 +33,9 @@ public class TripImputation {
 
     @ManyToOne
     private Lot lot;
+
+    @ManyToOne
+    private Soustraitant soustraitant;
 
     @Column(name = "cost_imputation")
     private Double costImputation;

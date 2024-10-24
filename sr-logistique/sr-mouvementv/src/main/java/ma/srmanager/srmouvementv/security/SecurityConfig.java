@@ -42,13 +42,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable();
 
         //Gerer les Autorisations par role
-       //ttp.authorizeRequests().antMatchers("/h2-console/**","/refreshToken/**","/login/**","/v3/api-docs").permitAll();
+       http.authorizeRequests().antMatchers("/h2-console/**","/refreshToken/**","/login/**","/v3/api-docs").permitAll();
      //   http.authorizeRequests().anyRequest().permitAll();
         //http.authorizeRequests().antMatchers(HttpMethod.POST,"/users/**").hasAuthority("ADMIN");
         //http.authorizeRequests().antMatchers(HttpMethod.GET,"/users/**").hasAuthority("USER");
-
         //Autoriser tout le restes des requetes aux utilisateurs authentifiés
-      //  http.authorizeRequests().anyRequest().authenticated();
+        http.authorizeRequests().anyRequest().authenticated();
 
         //Ajouter un filtre
         http.addFilterBefore(new JWTAuthorizationfilter(), UsernamePasswordAuthenticationFilter.class);

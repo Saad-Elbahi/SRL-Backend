@@ -18,7 +18,6 @@ public class FromMouvement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     private Affaire affaire;
 
@@ -28,11 +27,7 @@ public class FromMouvement {
     private String bl;
     private Double blMontant;
     private Date dateBl;
-    private String departement;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "to_affaire_id")
-    private Affaire toAffaire;  //TO
 
     @ManyToOne
     @JoinColumn(name = "vehicule_route_id")

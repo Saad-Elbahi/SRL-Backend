@@ -1,6 +1,8 @@
 package ma.srmanager.srmouvementv.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import ma.srmanager.srmouvementv.dto.ClientDTO;
+import ma.srmanager.srmouvementv.dto.SoustraitantDTO;
 import ma.srmanager.srmouvementv.model.Soustraitant;
 import ma.srmanager.srmouvementv.services.SoustraitantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,11 @@ public class SoustraitantController {
     public List<Soustraitant> getSoustraitants(@RequestHeader (name="Authorization") String token) throws IOException {
         log.info(token);
         return soustraitantService.getAllSoustraitants(token);
+    }
+    @GetMapping("/allSoustraitant")
+    public ResponseEntity<List<SoustraitantDTO>> getAllSoustraitant() {
+        List<SoustraitantDTO> clients = soustraitantService.getAllSoustraitant();
+        return ResponseEntity.ok(clients);
     }
 
 }

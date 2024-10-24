@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface FromMouvementService {
 
-     FromMouvement save(FromMouvement fromMouvement);
+     FromMouvement save(FromMouvementUpdateDTO dto) throws IOException;
 
      Optional<FromMouvement> findById(Long id);
 

@@ -1,9 +1,6 @@
 package ma.srmanager.srmouvementv.services;
 
-import ma.srmanager.srmouvementv.dto.AssociateChauffeurAndPriceDTO;
-import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
-import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
-import ma.srmanager.srmouvementv.dto.UpdateMouvementDTO;
+import ma.srmanager.srmouvementv.dto.*;
 import ma.srmanager.srmouvementv.model.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -19,11 +16,11 @@ public interface VehiculeRouteService {
      void fetchAndSaveRouteForVehicle(VehiculeGpsLocation vehicle, LocalDate date);
     VehiculeRoute updateMouvement(UpdateMouvementDTO dto);
 
-    VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvement> fromMouvements) ;
+    VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements) ;
 
     //service Association Imputation
 
-     VehiculeRoute associateImputation(Long vehiculeRouteId, List<TripImputation> imputations);
+     VehiculeRoute associateImputation(ImputationRequestDTO imputationRequestDTO);
 
      void deleteVehiculeroute(Long id);
 

@@ -27,7 +27,7 @@ public class ChauffeurServiceImpl implements ChauffeurService {
     @Autowired
     private ChauffeurRepository chauffeurRepository;
 
-    private static final  String fileUploadDir = System.getProperty("user.home") + "/Apps/sr-manager/RESSOURCES/data/assets/images/";
+    private static final  String fileUploadDir = System.getProperty("user.home") + "/Desktop/frontend/src/assets/images";
 
 
     @Override
@@ -40,15 +40,36 @@ public class ChauffeurServiceImpl implements ChauffeurService {
                 log.info(fileUploadDir);
 
                 String fileName = file.getOriginalFilename();
-                Path filePath = Paths.get(fileUploadDir + "avatars/" + fileName);
-                Files.createDirectories(filePath.getParent());
-                Files.write(filePath, file.getBytes());
-                chauffeur.setImgPath("/assets/images/avatars/" + fileName);
+                String fileExtension = "";
+                if (fileName != null && fileName.contains(".")) {
+                    fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                }
+
+                if (fileExtension.equalsIgnoreCase(".jpg") ||
+                        fileExtension.equalsIgnoreCase(".jpeg") ||
+                        fileExtension.equalsIgnoreCase(".png") ||
+                        fileExtension.equalsIgnoreCase(".gif") ||
+                        fileExtension.equalsIgnoreCase(".bmp") ||
+                        fileExtension.equalsIgnoreCase(".tiff")) {
+
+
+                    Path filePath = Paths.get(fileUploadDir + "/avatars/" + fileName);
+                    Files.createDirectories(filePath.getParent());
+                    Files.write(filePath, file.getBytes());
+                    chauffeur.setImgPath("/assets/images/avatars/" + fileName);
+                } else {
+                    log.info("Unsupported file type: " + fileExtension);
+                    throw new IOException("Unsupported file type");
+                }
             }
+
             chauffeurRepository.save(chauffeur);
+
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error("Error saving chauffeur or file: " + e.getMessage());
+            throw new IOException("Error saving chauffeur or file", e);
         }
+
         return chauffeurRepository.findAll();
     }
 
@@ -75,12 +96,14 @@ public class ChauffeurServiceImpl implements ChauffeurService {
 
     @Override
     public List<Chauffeur> updateChauffeur(Long id, Chauffeur chauffeurDetails, MultipartFile file) throws IOException {
-        log.info("updateChauffeur id=>" + chauffeurDetails.getId());
-        log.info("uploadDir=>" + fileUploadDir);
+        log.info("updateChauffeur id => " + chauffeurDetails.getId());
+        log.info("uploadDir => " + fileUploadDir);
+
         try {
             Optional<Chauffeur> optionalChauffeur = chauffeurRepository.findById(id);
             if (optionalChauffeur.isPresent()) {
                 Chauffeur chauffeur = optionalChauffeur.get();
+
                 chauffeur.setName(chauffeurDetails.getName());
                 chauffeur.setIdn(chauffeurDetails.getIdn());
                 chauffeur.setAddress(chauffeurDetails.getAddress());
@@ -88,30 +111,51 @@ public class ChauffeurServiceImpl implements ChauffeurService {
                 chauffeur.setEmail(chauffeurDetails.getEmail());
 
                 if (file != null && !file.isEmpty()) {
-                    // Handle file upload
+                    log.info("Updating chauffeur image");
+
                     String fileName = file.getOriginalFilename();
-                    String filePath = fileUploadDir + "avatars/" + fileName;
-                    Path path = Paths.get(filePath);
+                    String fileExtension = "";
 
-                    // Ensure the directory exists
-                    Files.createDirectories(path.getParent());
+                    if (fileName != null && fileName.contains(".")) {
+                        fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+                    }
 
-                    // Write file to the path
-                    Files.write(path, file.getBytes());
 
-                    // Set the relative path for the Chauffeur object
-                    chauffeur.setImgPath("/assets/images/avatars/" + fileName);
+                    if (fileExtension.equalsIgnoreCase(".jpg") ||
+                            fileExtension.equalsIgnoreCase(".jpeg") ||
+                            fileExtension.equalsIgnoreCase(".png") ||
+                            fileExtension.equalsIgnoreCase(".gif") ||
+                            fileExtension.equalsIgnoreCase(".bmp") ||
+                            fileExtension.equalsIgnoreCase(".tiff")) {
+
+                        String filePath = fileUploadDir + "/avatars/" + fileName;
+                        Path path = Paths.get(filePath);
+
+                        Files.createDirectories(path.getParent());
+                        Files.write(path, file.getBytes());
+
+                        chauffeur.setImgPath("/assets/images/avatars/" + fileName);
+
+                    } else {
+                        log.info("Unsupported file type: " + fileExtension);
+                        throw new IOException("Unsupported file type");
+                    }
                 }
 
+
                 chauffeurRepository.save(chauffeur);
+
             } else {
                 throw new RuntimeException("Chauffeur not found with id: " + id);
             }
         } catch (IOException e) {
-            log.info(e.getMessage());
+            log.error("Error updating chauffeur or file: " + e.getMessage());
+            throw new IOException("Error updating chauffeur or file", e);
         }
-       return chauffeurRepository.findAll();
+
+        return chauffeurRepository.findAll();
     }
+
 
     @Override
     public void deleteChauffeur(Long id) {

@@ -8,6 +8,10 @@ import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +20,21 @@ import java.util.Optional;
 public class FromMouvementServiceImpl implements FromMouvementService {
 
     private FromMouvementRepository fromMouvementRepository;
+    private static final String fileUploadDir = System.getProperty("user.home") + "/Apps/sr-manager/RESSOURCES/data/assets/images/";
 
     @Override
-    public FromMouvement save(FromMouvement fromMouvement) {
+    public FromMouvement save(FromMouvementUpdateDTO dto) throws IOException {
+        // Create a new FromMouvement entity
+        FromMouvement fromMouvement = new FromMouvement();
+
+        // Set fields from DTO
+        fromMouvement.setAffaire(dto.getAffaire());
+        fromMouvement.setFournisseur(dto.getFournisseur());
+        fromMouvement.setBl(dto.getBl());
+        fromMouvement.setBlMontant(dto.getBlMontant());
+        fromMouvement.setDateBl(dto.getDateBl());
+
+        // Save and return the created FromMouvement entity
         return fromMouvementRepository.save(fromMouvement);
     }
 
@@ -67,14 +83,7 @@ public class FromMouvementServiceImpl implements FromMouvementService {
             if (dto.getDateBl() != null) {
                 fromMouvement.setDateBl(dto.getDateBl());
             }
-            if (dto.getDepartement() != null) {
-                fromMouvement.setDepartement(dto.getDepartement());
-            }
-            if (dto.getToAffaire() != null) {
-                fromMouvement.setToAffaire(dto.getToAffaire());
-            }
 
-            // Save and return the updated entity
             return fromMouvementRepository.save(fromMouvement);
         } else {
             // Throw an exception if the entity with the given ID is not found
