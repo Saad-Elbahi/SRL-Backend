@@ -8,10 +8,7 @@ import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +25,8 @@ public class FromMouvementServiceImpl implements FromMouvementService {
         FromMouvement fromMouvement = new FromMouvement();
 
         // Set fields from DTO
-        fromMouvement.setAffaire(dto.getAffaire());
+        fromMouvement.setAffaireId(dto.getAffaire().getId());
+        fromMouvement.setAffaireCode(dto.getAffaire().getCode());
         fromMouvement.setFournisseur(dto.getFournisseur());
         fromMouvement.setBl(dto.getBl());
         fromMouvement.setBlMontant(dto.getBlMontant());
@@ -69,7 +67,8 @@ public class FromMouvementServiceImpl implements FromMouvementService {
 
             // Update the fields if they are present in the DTO
             if (dto.getAffaire() != null) {
-                fromMouvement.setAffaire(dto.getAffaire());
+                fromMouvement.setAffaireId(dto.getAffaire().getId());
+                fromMouvement.setAffaireCode(dto.getAffaire().getCode());
             }
             if (dto.getFournisseur() != null) {
                 fromMouvement.setFournisseur(dto.getFournisseur());

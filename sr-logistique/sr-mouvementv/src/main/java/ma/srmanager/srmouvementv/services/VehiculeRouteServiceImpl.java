@@ -5,26 +5,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.*;
 import ma.srmanager.srmouvementv.model.*;
+import ma.srmanager.srmouvementv.models.Affaire;
+import ma.srmanager.srmouvementv.models.SubContractor;
 import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -38,19 +35,20 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     @Autowired
     private VehiculeGpsLocationRepository vehiculeGpsLocationRepository;
     @Autowired
-    private AffaireRepository affaireRepository;
-    @Autowired
     private FournisseurRepository fournisseurRepository;
     @Autowired
     private FromMouvementRepository fromMouvementRepository;
     @Autowired
     private TripImputationRepository tripImputationRepository;
-    @Autowired
-    private SoustraitantRepository soustraitantRepository;
+
     @Autowired
     private LotRepository lotRepository;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private AffaireService affaireService;
+    @Autowired
+    private SubContractorService subContractorService;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
@@ -226,7 +224,7 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     }*/
     @Transactional
     @Override
-    public VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements) {
+    public VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements,String token)  {
 
         VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(vehiculeRouteId)
                 .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
@@ -242,9 +240,13 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
                 }
 
                 if (fromMouvementDTO.getAffaire() != null) {
-                    Affaire fullAffaire = affaireRepository.findById(fromMouvementDTO.getAffaire().getId())
-                            .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
-                    fromMouvement.setAffaire(fullAffaire);
+                    Affaire affaire = affaireService.getAffaireById(fromMouvementDTO.getAffaire().getId(),token);
+                    if(affaire==null){
+                        log.info("Affaire not found");
+                        throw new EntityNotFoundException("Affaire not found");
+                    }
+                    fromMouvement.setAffaireId(affaire.getId());
+                    fromMouvement.setAffaireCode(affaire.getCode());
                 }
 
                 if (fromMouvementDTO.getFournisseur() != null) {
@@ -270,7 +272,6 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
         // Save and return the updated VehiculeRoute
         return vehiculeRouteRepository.save(vehiculeRoute);
     }
-
     //file storage
    /* public String storeFile(MultipartFile file) {
         // Define the directory where files will be uploaded
@@ -302,9 +303,10 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     //service Association Imputation
     @Transactional
     @Override
-    public VehiculeRoute associateImputation(ImputationRequestDTO dto) {
+    public VehiculeRoute associateImputation(ImputationRequestDTO dto, String token) throws IOException {
         VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(dto.getVehiculeRouteId())
                 .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
+
 
         if (!dto.getImputations().isEmpty()) {
             vehiculeRoute.getImputations().clear();
@@ -315,13 +317,20 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
                 TripImputation imputation = new TripImputation();
                 imputation.setVehiculeRoute(vehiculeRoute);
 
-                if (imputationDTO.getAffaireId() != null) {
+                Affaire affaire = affaireService.getAffaireById(imputationDTO.getAffaireId(), token);
+
+                imputation.setAffaireId(imputationDTO.getAffaireId());
+                imputation.setAffaireCode(affaire.getCode());
+
+
+               /* if (imputationDTO.getAffaireId() != null) {
                     Affaire affaire = affaireRepository.findById(imputationDTO.getAffaireId())
                             .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
                     imputation.setAffaire(affaire);
                 } else {
                     System.err.println("Affaire ID is null for imputation: " + imputationDTO);
-                }
+                }*/
+
 
                 if (imputationDTO.getClientId() != null) {
                     Client client = clientRepository.findById(imputationDTO.getClientId())
@@ -335,11 +344,16 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
                     imputation.setLot(lot);
                 }
 
-                if (imputationDTO.getSoustraitantId() != null) {
+                SubContractor subContractor = subContractorService.byId(imputationDTO.getSubContractorId(), token);
+
+                imputation.setSubContractorId(imputationDTO.getSubContractorId());
+                imputation.setSubContractorFullName(subContractor.getFullName());
+
+                /*if (imputationDTO.getSoustraitantId() != null) {
                     Soustraitant soustraitant = soustraitantRepository.findById(imputationDTO.getSoustraitantId())
                             .orElseThrow(() -> new EntityNotFoundException("Soustraitant not found"));
                     imputation.setSoustraitant(soustraitant);
-                }
+                }*/
 
                 imputation.setId(imputationDTO.getId());
                 imputation.setFillingPercentage(imputationDTO.getFillingPercentage());
@@ -356,7 +370,6 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
 
         return vehiculeRouteRepository.save(vehiculeRoute);
     }
-
 
 
     @Override
@@ -452,16 +465,15 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     }
 
     @Override
-    public Map<Affaire, Double> calculateCostPerAffaire() {
+    public Map<String, Double> calculateCostPerAffaire() {
         List<TripImputation> imputations = tripImputationRepository.findAll();
 
-        Map<Affaire, Double> costPerAffaire = new HashMap<>();
+        Map<String, Double> costPerAffaire = new HashMap<>();
 
         for (TripImputation imputation : imputations) {
-            Affaire affaire = imputation.getAffaire();
             Double cost = imputation.getCostImputation();
 
-            costPerAffaire.merge(affaire, cost, Double::sum);
+            costPerAffaire.merge(imputation.getAffaireCode(), cost, Double::sum);
         }
 
         return costPerAffaire;

@@ -1,10 +1,9 @@
 package ma.srmanager.srmouvementv.dto;
 
 import lombok.Data;
-import ma.srmanager.srmouvementv.model.Affaire;
+import ma.srmanager.srmouvementv.models.Affaire;
 import ma.srmanager.srmouvementv.model.Fournisseur;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 @Data

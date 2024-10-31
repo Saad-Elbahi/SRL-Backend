@@ -1,6 +1,7 @@
 package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
+import ma.srmanager.srmouvementv.dto.TripImputationDTO;
 import ma.srmanager.srmouvementv.model.FromMouvement;
 import ma.srmanager.srmouvementv.model.TripImputation;
 import ma.srmanager.srmouvementv.services.TripImputationService;
@@ -31,6 +32,15 @@ public class TripImputationController {
     public ResponseEntity<Void> deleteImputation (@PathVariable Long id) {
         tripImputationService.deleteImputation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/updateImputation/{id}")
+    public ResponseEntity<TripImputation> updateImputation(
+            @PathVariable Long id,
+            @RequestBody TripImputationDTO updateDTO) {
+        updateDTO.setId(id);
+        TripImputation updatedImputation = tripImputationService.updateImputation(updateDTO);
+        return ResponseEntity.ok(updatedImputation);
     }
     //kpi endpoint
 

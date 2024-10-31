@@ -63,11 +63,11 @@ public class VehiculeGpsLocationController {
         return ResponseEntity.ok(updatedVehicle);
     }
 
-    @DeleteMapping("/deleteVehicule/{id}")
-    public List<VehiculeGpsLocation> deleteVehicule(@PathVariable Long id) {
+    @DeleteMapping("/deleteVehicule/{vehiculeId}")
+    public List<VehiculeGpsLocation> deleteVehicule(@PathVariable Long vehiculeId) {
         try {
-            vehiculeGpsLocationService.deleteVehicule(id);
-
+            vehiculeGpsLocationService.deleteVehicule(vehiculeId);
+            log.info(vehiculeId.toString());
         } catch (RuntimeException e) {
             log.info(e.getMessage());
         }

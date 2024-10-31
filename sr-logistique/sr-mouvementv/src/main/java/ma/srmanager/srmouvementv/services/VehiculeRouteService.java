@@ -2,6 +2,9 @@ package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.*;
 import ma.srmanager.srmouvementv.model.*;
+import ma.srmanager.srmouvementv.models.Affaire;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -16,11 +19,11 @@ public interface VehiculeRouteService {
      void fetchAndSaveRouteForVehicle(VehiculeGpsLocation vehicle, LocalDate date);
     VehiculeRoute updateMouvement(UpdateMouvementDTO dto);
 
-    VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements) ;
+    VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements,String token) throws IOException;
 
     //service Association Imputation
 
-     VehiculeRoute associateImputation(ImputationRequestDTO imputationRequestDTO);
+    VehiculeRoute associateImputation(ImputationRequestDTO imputationRequestDTO,String token) throws IOException;
 
      void deleteVehiculeroute(Long id);
 
@@ -34,7 +37,7 @@ public interface VehiculeRouteService {
 
      Double getTotalCostForSpecificMonth(int year, int month) ;
 
-     Map<Affaire, Double> calculateCostPerAffaire() ;
+    Map<String, Double> calculateCostPerAffaire();
 
     //cost by group
      Map<String, Object> getTotalCostByGroupName() ;
