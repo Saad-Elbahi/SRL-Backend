@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ma.srmanager.srmouvementv.models.Affaire;
+import ma.srmanager.srmouvementv.models.SubContractor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Setter
@@ -19,23 +20,33 @@ public class TripImputation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+   /* @ManyToOne
     @JoinColumn(name = "affaire_id", nullable = false)
-    private Affaire affaire;
+    private Affaire affaire;*/
+
+
+    /*@ManyToOne
+    private Soustraitant soustraitant;*/
+
+
+    private Long affaireId;
+    private String affaireCode;
+
+    private Long subContractorId;
+    private String subContractorFullName;
 
     @Column(name = "filling_percentage")
     private Double fillingPercentage; // % de remplissage
 
     @Column(name = "observation")
     private String observation;
+
     @ManyToOne
     private Client client;
 
     @ManyToOne
     private Lot lot;
 
-    @ManyToOne
-    private Soustraitant soustraitant;
 
     @Column(name = "cost_imputation")
     private Double costImputation;
@@ -53,5 +64,6 @@ public class TripImputation {
             this.costImputation = 0.0;
         }
     }
+
 
 }

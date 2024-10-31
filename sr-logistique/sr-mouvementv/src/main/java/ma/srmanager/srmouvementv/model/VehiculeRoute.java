@@ -34,7 +34,6 @@ public class VehiculeRoute {
     @Column(name = "cost_per_trip")
     private double costPerTrip; // Coût / voyage
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicule_id", nullable = false)
     private VehiculeGpsLocation vehiculeGpsLocation;

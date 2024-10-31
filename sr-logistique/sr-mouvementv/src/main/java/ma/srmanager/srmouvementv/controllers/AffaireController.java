@@ -3,9 +3,7 @@ package ma.srmanager.srmouvementv.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.AffaireDTO;
-import ma.srmanager.srmouvementv.dto.AssociateChauffeurAndPriceDTO;
-import ma.srmanager.srmouvementv.model.Affaire;
-import ma.srmanager.srmouvementv.model.VehiculeGpsLocation;
+import ma.srmanager.srmouvementv.models.Affaire;
 import ma.srmanager.srmouvementv.services.AffaireService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,38 +20,38 @@ public class AffaireController {
 
     private AffaireService affaireService;
 
-/*
-    @GetMapping("/getAllAffaire")
-    public List<Affaire> getAllAffaire() {
-        return affaireService.getAllAffaire();
-    }
-
-    @GetMapping("/saveAffaireFromApi")
-    public List<Affaire> saveAffaireFromApi() {
-        try {
-            return affaireService.saveAffaireFromApi();
-            //return "Affaires saved successfully";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    /*
+        @GetMapping("/getAllAffaire")
+        public List<Affaire> getAllAffaire() {
+            return affaireService.getAllAffaire();
         }
-    }
 
-    @GetMapping("/getAffaireById/{id}")
-    public Affaire getAffaireById(@PathVariable Long id) {
-        return affaireService.getAffaireById(id);
-    }
+        @GetMapping("/saveAffaireFromApi")
+        public List<Affaire> saveAffaireFromApi() {
+            try {
+                return affaireService.saveAffaireFromApi();
+                //return "Affaires saved successfully";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
 
-    @DeleteMapping("/deleteAffaire/{id}")
-    public void deleteAffaire(@PathVariable Long id) {
-        affaireService.deleteAffaire(id);
-    }*/
+        @GetMapping("/getAffaireById/{id}")
+        public Affaire getAffaireById(@PathVariable Long id) {
+            return affaireService.getAffaireById(id);
+        }
+
+        @DeleteMapping("/deleteAffaire/{id}")
+        public void deleteAffaire(@PathVariable Long id) {
+            affaireService.deleteAffaire(id);
+        }*/
     @GetMapping("/affaires")
-    public List<Affaire> getAffaire(@RequestHeader(name="Authorization") String token) throws IOException {
+    public List<Affaire> getAffaire(@RequestHeader(name = "Authorization") String token) throws IOException {
         log.info(token);
         return affaireService.getALLAffaire(token);
     }
-    @PutMapping("/updateAffaire")
+   /* @PutMapping("/updateAffaire")
     public ResponseEntity<Void> updateAffaire(@RequestBody AffaireDTO affaireDTO) throws IOException {
         try {
             affaireService.UpdateAffaire(affaireDTO);
@@ -66,5 +64,5 @@ public class AffaireController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+*/
 }

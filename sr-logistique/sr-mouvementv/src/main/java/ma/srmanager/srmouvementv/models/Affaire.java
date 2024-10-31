@@ -1,4 +1,4 @@
-package ma.srmanager.srmouvementv.model;
+package ma.srmanager.srmouvementv.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Entity
 @Setter
 @Getter
 @NoArgsConstructor

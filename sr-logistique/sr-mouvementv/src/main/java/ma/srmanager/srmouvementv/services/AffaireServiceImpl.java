@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.AffaireDTO;
-import ma.srmanager.srmouvementv.model.Affaire;
-import ma.srmanager.srmouvementv.repositories.AffaireRepository;
+import ma.srmanager.srmouvementv.models.Affaire;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 
@@ -23,7 +21,6 @@ import java.util.*;
 @Slf4j
 public class AffaireServiceImpl implements AffaireService {
 
-    private AffaireRepository affaireRepository;
 
     private ObjectMapper objectMapper;
 
@@ -64,7 +61,7 @@ public class AffaireServiceImpl implements AffaireService {
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 List<Affaire> affaires = Arrays.asList(response.getBody());
 
-                affaireRepository.saveAll(affaires);
+                //affaireRepository.saveAll(affaires);
 
                 return affaires;
             } else {
@@ -72,22 +69,41 @@ public class AffaireServiceImpl implements AffaireService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
             return Collections.emptyList();
         }
     }
 
     @Override
-    public Affaire UpdateAffaire(AffaireDTO affaireDTO) {
-        Affaire affaire = affaireRepository.findById(affaireDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Affaire with ID" + affaireDTO.getId() + "Not fouand"));
-        affaire.setCode(affaireDTO.getCode());
-        affaire.setVilleintitule(affaireDTO.getVilleintitule());
-        affaire.setChefZoneUsername(affaireDTO.getChefZoneUsername());
-        affaire.setChefZoneFullName(affaireDTO.getChefZoneFullName());
-        return affaireRepository.save(affaire);
-    }
+    public Affaire getAffaireById(Long id, String token)  {
+        String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byId/"+id;
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            System.out.println("Sending request to external API...");
+
+            ResponseEntity<Affaire> response = restTemplate.exchange(url, HttpMethod.GET, entity, Affaire.class);
+
+            System.out.println("Response Status Code: " + response.getStatusCode());
+            System.out.println("Response Body: " + response.toString());
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+
+                //affaireRepository.saveAll(affaires);
+
+                return response.getBody();
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return null;
+        }
+    }
 //    @Transactional
 //    @Override
 //    public List<Affaire> saveAffaireFromApi() throws IOException {

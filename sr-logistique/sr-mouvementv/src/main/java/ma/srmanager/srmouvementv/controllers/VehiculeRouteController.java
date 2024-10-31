@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -43,23 +44,23 @@ public class VehiculeRouteController {
     }
 
     @PostMapping("/associateFromTo")
-    public ResponseEntity<VehiculeRoute> associateFromMouvementsAndTo(@RequestBody AssociateFromToRequestDTO request) {
-        VehiculeRoute vehiculeRoute = vehiculeRouteService.associateFromMouvementsAndTo(
-                request.getVehiculeRouteId(),
-                request.getFromMouvements()
-        );
+    public ResponseEntity<VehiculeRoute> associateFromMouvementsAndTo(@RequestBody AssociateFromToRequestDTO request,
+                                                                      @RequestHeader(name = "Authorization") String token) throws IOException {
+        VehiculeRoute vehiculeRoute = vehiculeRouteService.associateFromMouvementsAndTo(request.getVehiculeRouteId(), request.getFromMouvements(), token);
         return ResponseEntity.ok(vehiculeRoute);
     }
 
 
 
 
+
     // Controller for associateImputation
     @PostMapping("/associateImputation")
-    public ResponseEntity<VehiculeRoute> associateImputation(@RequestBody ImputationRequestDTO imputationRequestDTO) {
+    public ResponseEntity<VehiculeRoute> associateImputation(@RequestBody ImputationRequestDTO imputationRequestDTO,
+                                                             @RequestHeader(name = "Authorization") String token) {
         try {
 
-            VehiculeRoute vehiculeRoute = vehiculeRouteService.associateImputation(imputationRequestDTO);
+            VehiculeRoute vehiculeRoute = vehiculeRouteService.associateImputation(imputationRequestDTO,token);
 
             return ResponseEntity.ok(vehiculeRoute);
         } catch (EntityNotFoundException e) {
@@ -70,7 +71,6 @@ public class VehiculeRouteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
 
     //-----------------------------------------------------
     @GetMapping("/fetchAndSaveYesterdayRoutes")
@@ -107,7 +107,7 @@ public class VehiculeRouteController {
     }
 
 
-    @Scheduled(cron = "0 05 11 * * ?")
+    @Scheduled(cron = "0 55 15 * * ?")
     public void scheduleFetchAndSaveYesterdayRoutes() {
         fetchAndSaveYesterdayRoutes();
         System.out.println("Routes fetched and saved successfully for yesterday (scheduled task)");
@@ -146,12 +146,13 @@ public class VehiculeRouteController {
 
         Map<String, Double> costPerAffaire = imputations.stream()
                 .collect(Collectors.groupingBy(
-                        imputation -> imputation.getAffaire().getCode(), // Assuming Affaire has a getName() method
+                        TripImputation::getAffaireCode, // Assuming Affaire has a getName() method
                         Collectors.summingDouble(TripImputation::getCostImputation)
                 ));
 
         return ResponseEntity.ok(costPerAffaire);
     }
+
 
     //cost by group
     @GetMapping("/costByGroup")
