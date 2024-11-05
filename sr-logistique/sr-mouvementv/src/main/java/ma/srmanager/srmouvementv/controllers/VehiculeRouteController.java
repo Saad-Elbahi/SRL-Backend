@@ -42,6 +42,7 @@ public class VehiculeRouteController {
     public VehiculeRoute getVehiculeMouvementById(@PathVariable Long id) {
         return vehiculeRouteService.getVehiculeRouteById(id);
     }
+/*
 
     @PostMapping("/associateFromTo")
     public ResponseEntity<VehiculeRoute> associateFromMouvementsAndTo(@RequestBody AssociateFromToRequestDTO request,
@@ -49,28 +50,13 @@ public class VehiculeRouteController {
         VehiculeRoute vehiculeRoute = vehiculeRouteService.associateFromMouvementsAndTo(request.getVehiculeRouteId(), request.getFromMouvements(), token);
         return ResponseEntity.ok(vehiculeRoute);
     }
+*/
 
 
 
 
 
-    // Controller for associateImputation
-    @PostMapping("/associateImputation")
-    public ResponseEntity<VehiculeRoute> associateImputation(@RequestBody ImputationRequestDTO imputationRequestDTO,
-                                                             @RequestHeader(name = "Authorization") String token) {
-        try {
 
-            VehiculeRoute vehiculeRoute = vehiculeRouteService.associateImputation(imputationRequestDTO,token);
-
-            return ResponseEntity.ok(vehiculeRoute);
-        } catch (EntityNotFoundException e) {
-            log.error("Entity not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            log.error("An error occurred: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
 
     //-----------------------------------------------------
     @GetMapping("/fetchAndSaveYesterdayRoutes")
@@ -107,7 +93,7 @@ public class VehiculeRouteController {
     }
 
 
-    @Scheduled(cron = "0 55 15 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void scheduleFetchAndSaveYesterdayRoutes() {
         fetchAndSaveYesterdayRoutes();
         System.out.println("Routes fetched and saved successfully for yesterday (scheduled task)");

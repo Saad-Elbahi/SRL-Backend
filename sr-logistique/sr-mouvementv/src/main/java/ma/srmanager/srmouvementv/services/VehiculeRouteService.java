@@ -19,11 +19,10 @@ public interface VehiculeRouteService {
      void fetchAndSaveRouteForVehicle(VehiculeGpsLocation vehicle, LocalDate date);
     VehiculeRoute updateMouvement(UpdateMouvementDTO dto);
 
-    VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements,String token) throws IOException;
+ //   VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements,String token) throws IOException;
 
     //service Association Imputation
 
-    VehiculeRoute associateImputation(ImputationRequestDTO imputationRequestDTO,String token) throws IOException;
 
      void deleteVehiculeroute(Long id);
 

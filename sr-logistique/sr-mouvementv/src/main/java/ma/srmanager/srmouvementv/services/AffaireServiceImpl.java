@@ -3,7 +3,7 @@ package ma.srmanager.srmouvementv.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.dto.AffaireDTO;
+
 import ma.srmanager.srmouvementv.models.Affaire;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +44,8 @@ public class AffaireServiceImpl implements AffaireService {
 
     @Override
     public List<Affaire> getALLAffaire(String token) throws IOException {
-        String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byStatus/EN_COURS";
+        //String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byStatus/EN_COURS";
+        String url =  "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byStatus/EN_COURS";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
@@ -76,6 +77,7 @@ public class AffaireServiceImpl implements AffaireService {
 
     @Override
     public Affaire getAffaireById(Long id, String token)  {
+        //String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byId/"+id;
         String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byId/"+id;
 
         HttpHeaders headers = new HttpHeaders();

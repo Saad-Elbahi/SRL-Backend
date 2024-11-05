@@ -2,11 +2,9 @@ package ma.srmanager.srmouvementv.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+
 import ma.srmanager.srmouvementv.dto.SoustraitantDTO;
-import ma.srmanager.srmouvementv.dto.TripImputationDTO;
-import ma.srmanager.srmouvementv.model.TripImputation;
 import ma.srmanager.srmouvementv.models.SubContractor;
-import ma.srmanager.srmouvementv.repositories.TripImputationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,7 +50,8 @@ public class SubContractorServiceImpl implements SubContractorService {
     @Override
     public List<SubContractor> getAllSoustraitants(String token, Long projectId) {
         // Updated URL to fetch all subcontractors
-        String url = "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/all?projectId=" + projectId;
+        //String url = "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/all?projectId=" + projectId;
+        String url =  "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byProject/" + projectId;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
@@ -88,7 +87,8 @@ public class SubContractorServiceImpl implements SubContractorService {
 
     @Override
     public SubContractor byId(Long id,String token) {
-        String url = "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byId/"+id;
+        //String url = "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byId/"+id;
+        String url ="https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byId/"+id;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
