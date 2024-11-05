@@ -75,25 +75,22 @@ public class FromMouvementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    @PutMapping("/updateFromMouvement/{id}")
+    @PutMapping("/updateMouvement")
     public ResponseEntity<List<FromMouvement>> updateFromMouvement(
-            @PathVariable Long id,
-            @RequestBody FromMouvementRequestDTO dto,
-            @RequestHeader(name = "Authorization") String token
-    ) {
-        dto.setVehiculeRouteId(id);
+            @RequestBody FromMouvementRequestDTO fromMouvementRequestDTO,
+            @RequestHeader("Authorization") String token) {
         try {
-            List<FromMouvement> fromMouvements = fromMouvementService.updateFromMouvement(dto);
-
-            return ResponseEntity.ok(fromMouvements);
+            List<FromMouvement> updatedFromMouvements = fromMouvementService.updateFromMouvement(fromMouvementRequestDTO, token);
+            return new ResponseEntity<>(updatedFromMouvements, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            log.error("Entity not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            log.error("An error occurred: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (IOException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 
