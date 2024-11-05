@@ -1,10 +1,8 @@
 package ma.srmanager.srmouvementv.services;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.FromMouvementRequestDTO;
-import ma.srmanager.srmouvementv.dto.FromMouvementUpdateDTO;
 import ma.srmanager.srmouvementv.model.Fournisseur;
 import ma.srmanager.srmouvementv.model.FromMouvement;
 import ma.srmanager.srmouvementv.model.VehiculeRoute;
@@ -13,7 +11,6 @@ import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.io.IOException;
 
 import java.util.List;
@@ -70,45 +67,56 @@ public class FromMouvementServiceImpl implements FromMouvementService {
         return fromMouvementRepository.findByVehiculeRouteId(vehiculeRouteId);
     }
     @Override
-    public List<FromMouvement> updateFromMouvement(FromMouvementRequestDTO dto) throws IOException {
-        // Retrieve the existing FromMouvement by its ID
-        Optional<FromMouvement> optionalFromMouvement = fromMouvementRepository.findById(dto.getVehiculeRouteId());
+    public List<FromMouvement> updateFromMouvement(FromMouvementRequestDTO fromMouvementRequestDTO, String token) throws IOException {
 
-        if (optionalFromMouvement.isPresent()) {
-            // Get the existing entity
-            FromMouvement fromMouvement = optionalFromMouvement.get();
-
-            // Update fields if they are present in the DTO
-            if (dto.getAffaireId() != null) {
-                fromMouvement.setAffaireId(dto.getAffaireId());
-            }
-            if (dto.getAffaireCode() != null) {
-                fromMouvement.setAffaireCode(dto.getAffaireCode());
-            }
-            if (dto.getFournisseurId() != null) {
-                fromMouvement.setFournisseurid(dto.getFournisseurId());
-            }
-            if (dto.getFournisseurName() != null) {
-                fromMouvement.setFournisseurName(dto.getFournisseurName());
-            }
-            if (dto.getBl() != null) {
-                fromMouvement.setBl(dto.getBl());
-            }
-            if (dto.getBlMontant() != null) {
-                fromMouvement.setBlMontant(dto.getBlMontant());
-            }
-            if (dto.getDateBl() != null) {
-                fromMouvement.setDateBl(dto.getDateBl());
-            }
-
-            // Save the updated entity and return it
-             fromMouvementRepository.save(fromMouvement);
-            return getFromMouvementsByVehiculeRouteId(dto.getVehiculeRouteId());
-        } else {
-            // Throw an exception if the entity with the given ID is not found
-            throw new IOException("FromMouvement with id " + dto.getVehiculeRouteId() + " not found.");
+        if (fromMouvementRequestDTO.getId() == null) {
+            throw new IllegalArgumentException("The provided ID must not be null");
         }
+
+        FromMouvement existingFromMouvement = fromMouvementRepository.findById(fromMouvementRequestDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("FromMouvement not found"));
+
+        if (fromMouvementRequestDTO.getAffaireId() != null && fromMouvementRequestDTO.getFournisseurId() != null) {
+            throw new IllegalArgumentException("FromMouvement cannot have both an Affaire and a Fournisseur at the same time");
+        }
+
+        if (fromMouvementRequestDTO.getAffaireId() != null) {
+            Affaire affaire = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
+            if (affaire == null) {
+                throw new EntityNotFoundException("Affaire not found");
+            }
+            existingFromMouvement.setAffaireId(affaire.getId());
+            existingFromMouvement.setAffaireCode(affaire.getCode());
+
+            existingFromMouvement.setFournisseurid(null);
+            existingFromMouvement.setFournisseurName(null);
+        } else {
+            existingFromMouvement.setAffaireId(null);
+            existingFromMouvement.setAffaireCode(null);
+        }
+
+        if (fromMouvementRequestDTO.getFournisseurId() != null) {
+            Fournisseur fournisseur = fournisseurRepository.findById(fromMouvementRequestDTO.getFournisseurId())
+                    .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
+            existingFromMouvement.setFournisseurid(fournisseur.getId());
+            existingFromMouvement.setFournisseurName(fournisseur.getIntituleFournisseur());
+
+            existingFromMouvement.setAffaireId(null);
+            existingFromMouvement.setAffaireCode(null);
+        } else {
+            existingFromMouvement.setFournisseurid(null);
+            existingFromMouvement.setFournisseurName(null);
+        }
+
+        existingFromMouvement.setBl(fromMouvementRequestDTO.getBl());
+        existingFromMouvement.setBlMontant(fromMouvementRequestDTO.getBlMontant());
+        existingFromMouvement.setDateBl(fromMouvementRequestDTO.getDateBl());
+
+        fromMouvementRepository.save(existingFromMouvement);
+
+        return getFromMouvementsByVehiculeRouteId(existingFromMouvement.getVehiculeRoute().getId());
     }
+
 
     @Override
     public List<FromMouvement> saveFromMouvement(FromMouvementRequestDTO fromMouvementRequestDTO, String token) throws IOException {
@@ -147,18 +155,15 @@ public class FromMouvementServiceImpl implements FromMouvementService {
 
         }
 
-        // Set other fields from the DTO
         fromMouvement.setVehiculeGpsLocation(vehiculeRoute.getVehiculeGpsLocation());
         fromMouvement.setVehiculeRoute(vehiculeRoute);
         fromMouvement.setBl(fromMouvementRequestDTO.getBl());
         fromMouvement.setBlMontant(fromMouvementRequestDTO.getBlMontant());
         fromMouvement.setDateBl(fromMouvementRequestDTO.getDateBl());
 
-        // Save the FromMouvement and add it to the VehiculeRoute
         FromMouvement savedFromMouvement = fromMouvementRepository.save(fromMouvement);
         vehiculeRoute.addFromMouvement(savedFromMouvement);
 
-        // Save and return the updated list of FromMouvements
         vehiculeRouteRepository.save(vehiculeRoute);
         return getFromMouvementsByVehiculeRouteId(fromMouvementRequestDTO.getVehiculeRouteId());
     }

@@ -18,13 +18,14 @@ public interface FromMouvementService {
      Optional<FromMouvement> findById(Long id);
 
      List<FromMouvement> findAll();
+
+     List<FromMouvement> updateFromMouvement(FromMouvementRequestDTO fromMouvementRequestDTO, String token) throws IOException;
+
      List<FromMouvement> saveFromMouvement(FromMouvementRequestDTO dto, String token) throws IOException;
 
 
      void deleteById(Long id);
 
      List<FromMouvement> getFromMouvementsByVehiculeRouteId(Long vehiculeRouteId);
-
-    List<FromMouvement> updateFromMouvement(FromMouvementRequestDTO dto) throws IOException;
 
 }

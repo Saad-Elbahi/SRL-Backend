@@ -3,8 +3,6 @@ package ma.srmanager.srmouvementv.model;
 import javax.persistence.*;
 import lombok.*;
 
-import org.hibernate.proxy.HibernateProxy;
-
 import java.util.Date;
 
 
@@ -22,7 +20,7 @@ public class FromMouvement {
     private Long affaireId;
     private String affaireCode;
 
-    private long fournisseurid;
+    private Long fournisseurid;
     private String fournisseurName;
 
     private String bl;
