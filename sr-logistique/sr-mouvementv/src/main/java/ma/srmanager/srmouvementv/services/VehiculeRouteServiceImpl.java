@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -53,6 +52,8 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     private RestTemplate restTemplate;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private TripImputationService tripImputationService;
 
     private static final Logger logger = Logger.getLogger(VehiculeGpsLocationServiceImpl.class.getName());
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -222,8 +223,9 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
         // Save and return the updated VehiculeRoute
         return vehiculeRouteRepository.save(vehiculeRoute);
     }*/
-    @Transactional
-    @Override
+//    @Transactional
+//    @Override
+/*
     public VehiculeRoute associateFromMouvementsAndTo(Long vehiculeRouteId, List<FromMouvementUpdateDTO> fromMouvements,String token)  {
 
         VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(vehiculeRouteId)
@@ -272,6 +274,7 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
         // Save and return the updated VehiculeRoute
         return vehiculeRouteRepository.save(vehiculeRoute);
     }
+*/
     //file storage
    /* public String storeFile(MultipartFile file) {
         // Define the directory where files will be uploaded
@@ -299,77 +302,6 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
             throw new RuntimeException("Failed to store file: " + fileName, ex);
         }
     }*/
-
-    //service Association Imputation
-    @Transactional
-    @Override
-    public VehiculeRoute associateImputation(ImputationRequestDTO dto, String token) throws IOException {
-        VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(dto.getVehiculeRouteId())
-                .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
-
-
-        if (!dto.getImputations().isEmpty()) {
-            vehiculeRoute.getImputations().clear();
-
-            List<TripImputation> updatedImputations = new ArrayList<>();
-
-            for (TripImputationDTO imputationDTO : dto.getImputations()) {
-                TripImputation imputation = new TripImputation();
-                imputation.setVehiculeRoute(vehiculeRoute);
-
-                Affaire affaire = affaireService.getAffaireById(imputationDTO.getAffaireId(), token);
-
-                imputation.setAffaireId(imputationDTO.getAffaireId());
-                imputation.setAffaireCode(affaire.getCode());
-
-
-               /* if (imputationDTO.getAffaireId() != null) {
-                    Affaire affaire = affaireRepository.findById(imputationDTO.getAffaireId())
-                            .orElseThrow(() -> new EntityNotFoundException("Affaire not found"));
-                    imputation.setAffaire(affaire);
-                } else {
-                    System.err.println("Affaire ID is null for imputation: " + imputationDTO);
-                }*/
-
-
-                if (imputationDTO.getClientId() != null) {
-                    Client client = clientRepository.findById(imputationDTO.getClientId())
-                            .orElseThrow(() -> new EntityNotFoundException("Client not found"));
-                    imputation.setClient(client);
-                }
-
-                if (imputationDTO.getLotId() != null) {
-                    Lot lot = lotRepository.findById(imputationDTO.getLotId())
-                            .orElseThrow(() -> new EntityNotFoundException("Lot not found"));
-                    imputation.setLot(lot);
-                }
-
-                SubContractor subContractor = subContractorService.byId(imputationDTO.getSubContractorId(), token);
-
-                imputation.setSubContractorId(imputationDTO.getSubContractorId());
-                imputation.setSubContractorFullName(subContractor.getFullName());
-
-                /*if (imputationDTO.getSoustraitantId() != null) {
-                    Soustraitant soustraitant = soustraitantRepository.findById(imputationDTO.getSoustraitantId())
-                            .orElseThrow(() -> new EntityNotFoundException("Soustraitant not found"));
-                    imputation.setSoustraitant(soustraitant);
-                }*/
-
-                imputation.setId(imputationDTO.getId());
-                imputation.setFillingPercentage(imputationDTO.getFillingPercentage());
-                imputation.setObservation(imputationDTO.getObservation());
-                imputation.setCostImputation(imputationDTO.getCostImputation());
-
-                updatedImputations.add(imputation);
-            }
-
-            List<TripImputation> savedImputations = tripImputationRepository.saveAll(updatedImputations);
-
-            vehiculeRoute.getImputations().addAll(savedImputations);
-        }
-
-        return vehiculeRouteRepository.save(vehiculeRoute);
-    }
 
 
     @Override

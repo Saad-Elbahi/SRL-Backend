@@ -1,26 +1,32 @@
 package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ma.srmanager.srmouvementv.dto.FromMouvementRequestDTO;
 import ma.srmanager.srmouvementv.dto.FromMouvementUpdateDTO;
+import ma.srmanager.srmouvementv.dto.TripImputationRequestDTO;
 import ma.srmanager.srmouvementv.model.FromMouvement;
+import ma.srmanager.srmouvementv.model.TripImputation;
 import ma.srmanager.srmouvementv.services.FromMouvementService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/frommvtapi")
 public class FromMouvementController {
 
     private final FromMouvementService fromMouvementService;
 
-    @PostMapping("/create")
+   /* @PostMapping("/create")
     public ResponseEntity<FromMouvement> createFromMouvement(@RequestBody FromMouvementUpdateDTO dto) {
         try {
             FromMouvement savedFromMouvement = fromMouvementService.save(dto);
@@ -28,7 +34,7 @@ public class FromMouvementController {
         } catch (IOException e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 
     @GetMapping("/FromMouvement/{id}")
     public ResponseEntity<FromMouvement> getFromMouvementById(@PathVariable Long id) {
@@ -53,15 +59,45 @@ public class FromMouvementController {
         return fromMouvementService.getFromMouvementsByVehiculeRouteId(vehiculeRouteId);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<FromMouvement> updateFromMouvement(@RequestBody FromMouvementUpdateDTO dto) {
+    @PostMapping("/saveFromMouvement")
+    public ResponseEntity<List<FromMouvement>> saveFromMouvement(@RequestBody FromMouvementRequestDTO fromMouvementRequestDTO,
+                                                              @RequestHeader(name = "Authorization") String token) {
         try {
-            FromMouvement updatedFromMouvement = fromMouvementService.updateFromMouvement(dto);
-            return new ResponseEntity<>(updatedFromMouvement, HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            List<FromMouvement> fromMouvements = fromMouvementService.saveFromMouvement(fromMouvementRequestDTO, token);
+
+            return ResponseEntity.ok(fromMouvements);
+        } catch (EntityNotFoundException e) {
+            log.error("Entity not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            log.error("An error occurred: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    @PutMapping("/updateFromMouvement/{id}")
+    public ResponseEntity<List<FromMouvement>> updateFromMouvement(
+            @PathVariable Long id,
+            @RequestBody FromMouvementRequestDTO dto,
+            @RequestHeader(name = "Authorization") String token
+    ) {
+        dto.setVehiculeRouteId(id);
+        try {
+            List<FromMouvement> fromMouvements = fromMouvementService.updateFromMouvement(dto);
+
+            return ResponseEntity.ok(fromMouvements);
+        } catch (EntityNotFoundException e) {
+            log.error("Entity not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            log.error("An error occurred: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+
+
 
 
 }

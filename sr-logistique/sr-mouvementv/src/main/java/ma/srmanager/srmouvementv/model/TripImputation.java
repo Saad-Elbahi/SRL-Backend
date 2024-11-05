@@ -20,15 +20,6 @@ public class TripImputation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-   /* @ManyToOne
-    @JoinColumn(name = "affaire_id", nullable = false)
-    private Affaire affaire;*/
-
-
-    /*@ManyToOne
-    private Soustraitant soustraitant;*/
-
-
     private Long affaireId;
     private String affaireCode;
 

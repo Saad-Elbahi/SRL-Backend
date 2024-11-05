@@ -22,8 +22,8 @@ public class FromMouvement {
     private Long affaireId;
     private String affaireCode;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Fournisseur fournisseur;
+    private long fournisseurid;
+    private String fournisseurName;
 
     private String bl;
     private Double blMontant;
