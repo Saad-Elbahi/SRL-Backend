@@ -19,8 +19,9 @@ public class FromMouvement {
 
     private Long affaireId;
     private String affaireCode;
-
+    @Column(nullable = true)
     private Long fournisseurid;
+
     private String fournisseurName;
 
     private String bl;
