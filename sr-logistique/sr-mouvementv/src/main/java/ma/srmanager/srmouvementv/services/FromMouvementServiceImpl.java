@@ -76,10 +76,12 @@ public class FromMouvementServiceImpl implements FromMouvementService {
         FromMouvement existingFromMouvement = fromMouvementRepository.findById(fromMouvementRequestDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("FromMouvement not found"));
 
+        // Ensure only one of Affaire or Fournisseur is set
         if (fromMouvementRequestDTO.getAffaireId() != null && fromMouvementRequestDTO.getFournisseurId() != null) {
             throw new IllegalArgumentException("FromMouvement cannot have both an Affaire and a Fournisseur at the same time");
         }
 
+        // Handle Affaire assignment
         if (fromMouvementRequestDTO.getAffaireId() != null) {
             Affaire affaire = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
             if (affaire == null) {
@@ -88,24 +90,25 @@ public class FromMouvementServiceImpl implements FromMouvementService {
             existingFromMouvement.setAffaireId(affaire.getId());
             existingFromMouvement.setAffaireCode(affaire.getCode());
 
-            existingFromMouvement.setFournisseurid(null);
-            existingFromMouvement.setFournisseurName(null);
+            existingFromMouvement.setFournisseurid(0L); // Set to default value when not used
+            existingFromMouvement.setFournisseurName("");
         } else {
-            existingFromMouvement.setAffaireId(null);
-            existingFromMouvement.setAffaireCode(null);
+            existingFromMouvement.setAffaireId(0L); // Set to default value when not used
+            existingFromMouvement.setAffaireCode("");
         }
 
+        // Handle Fournisseur assignment
         if (fromMouvementRequestDTO.getFournisseurId() != null) {
             Fournisseur fournisseur = fournisseurRepository.findById(fromMouvementRequestDTO.getFournisseurId())
                     .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
             existingFromMouvement.setFournisseurid(fournisseur.getId());
             existingFromMouvement.setFournisseurName(fournisseur.getIntituleFournisseur());
 
-            existingFromMouvement.setAffaireId(null);
-            existingFromMouvement.setAffaireCode(null);
+            existingFromMouvement.setAffaireId(0L); // Set to default value when not used
+            existingFromMouvement.setAffaireCode("");
         } else {
-            existingFromMouvement.setFournisseurid(null);
-            existingFromMouvement.setFournisseurName(null);
+            existingFromMouvement.setFournisseurid(0L); // Set to default value when not used
+            existingFromMouvement.setFournisseurName("");
         }
 
         existingFromMouvement.setBl(fromMouvementRequestDTO.getBl());
@@ -117,33 +120,31 @@ public class FromMouvementServiceImpl implements FromMouvementService {
         return getFromMouvementsByVehiculeRouteId(existingFromMouvement.getVehiculeRoute().getId());
     }
 
-
     @Override
     public List<FromMouvement> saveFromMouvement(FromMouvementRequestDTO fromMouvementRequestDTO, String token) throws IOException {
         // Fetch the VehiculeRoute using the provided ID
         VehiculeRoute vehiculeRoute = vehiculeRouteRepository.findById(fromMouvementRequestDTO.getVehiculeRouteId())
                 .orElseThrow(() -> new EntityNotFoundException("VehiculeRoute not found"));
 
-        // Clear existing FromMouvement list if any
         vehiculeRoute.getFromMouvements().clear();
 
-        // Create a new FromMouvement instance
         FromMouvement fromMouvement = new FromMouvement();
 
-        // Check for Affaire and Fournisseur conflict
         if (fromMouvementRequestDTO.getAffaireId() != null && fromMouvementRequestDTO.getFournisseurId() != null) {
             throw new IllegalArgumentException("FromMouvement cannot have both an Affaire and a Fournisseur at the same time");
         }
 
-        // Handle Affaire assignment
         if (fromMouvementRequestDTO.getAffaireId() != null) {
             Affaire affaire = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
             if (affaire == null) {
-                log.info("Affaire not found");
                 throw new EntityNotFoundException("Affaire not found");
             }
             fromMouvement.setAffaireId(affaire.getId());
             fromMouvement.setAffaireCode(affaire.getCode());
+
+            // Reset Fournisseur fields
+            fromMouvement.setFournisseurid(0L);
+            fromMouvement.setFournisseurName("");
         }
 
         // Handle Fournisseur assignment
@@ -153,20 +154,27 @@ public class FromMouvementServiceImpl implements FromMouvementService {
             fromMouvement.setFournisseurid(fournisseur.getId());
             fromMouvement.setFournisseurName(fournisseur.getIntituleFournisseur());
 
+            // Reset Affaire fields
+            fromMouvement.setAffaireId(0L);
+            fromMouvement.setAffaireCode("");
         }
 
+        // Set remaining fields from the DTO
         fromMouvement.setVehiculeGpsLocation(vehiculeRoute.getVehiculeGpsLocation());
         fromMouvement.setVehiculeRoute(vehiculeRoute);
         fromMouvement.setBl(fromMouvementRequestDTO.getBl());
         fromMouvement.setBlMontant(fromMouvementRequestDTO.getBlMontant());
         fromMouvement.setDateBl(fromMouvementRequestDTO.getDateBl());
 
+        // Save the new FromMouvement and add it to the VehiculeRoute
         FromMouvement savedFromMouvement = fromMouvementRepository.save(fromMouvement);
         vehiculeRoute.addFromMouvement(savedFromMouvement);
 
+        // Save VehiculeRoute to maintain association
         vehiculeRouteRepository.save(vehiculeRoute);
+
+        // Return updated list of FromMouvement for the VehiculeRoute
         return getFromMouvementsByVehiculeRouteId(fromMouvementRequestDTO.getVehiculeRouteId());
     }
-
 
 }
