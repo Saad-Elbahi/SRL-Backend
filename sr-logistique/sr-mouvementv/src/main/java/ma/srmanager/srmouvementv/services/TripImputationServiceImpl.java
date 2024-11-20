@@ -2,11 +2,11 @@ package ma.srmanager.srmouvementv.services;
 
 import lombok.AllArgsConstructor;
 import ma.srmanager.srmouvementv.dto.TripImputationRequestDTO;
-import ma.srmanager.srmouvementv.model.Client;
-import ma.srmanager.srmouvementv.model.Lot;
-import ma.srmanager.srmouvementv.model.TripImputation;
-import ma.srmanager.srmouvementv.model.VehiculeRoute;
-import ma.srmanager.srmouvementv.models.Affaire;
+import ma.srmanager.srmouvementv.entities.Client;
+import ma.srmanager.srmouvementv.entities.Lot;
+import ma.srmanager.srmouvementv.entities.TripImputation;
+import ma.srmanager.srmouvementv.entities.VehiculeRoute;
+import ma.srmanager.srmouvementv.models.Marche;
 import ma.srmanager.srmouvementv.models.SubContractor;
 import ma.srmanager.srmouvementv.repositories.ClientRepository;
 import ma.srmanager.srmouvementv.repositories.LotRepository;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -63,10 +62,10 @@ public class TripImputationServiceImpl implements TripImputationService {
         TripImputation imputation = new TripImputation();
         imputation.setVehiculeRoute(vehiculeRoute);
 
-        Affaire affaire = affaireService.getAffaireById(dto.getAffaireId(), token);
+        Marche marche = affaireService.getAffaireById(dto.getAffaireId(), token);
 
         imputation.setAffaireId(dto.getAffaireId());
-        imputation.setAffaireCode(affaire.getCode());
+        imputation.setAffaireCode(marche.getCode());
 
 
         if (dto.getClientId() != null) {
@@ -81,10 +80,15 @@ public class TripImputationServiceImpl implements TripImputationService {
             imputation.setLot(lot);
         }
 
-        SubContractor subContractor = subContractorService.byId(dto.getSubContractorId(), token);
+        if (dto.getSubContractorId() != null) {
+            SubContractor subContractor = subContractorService.byId(dto.getSubContractorId(), token);
+            if(subContractor != null) {
+                new EntityNotFoundException("Client not found");
+            }
+            imputation.setSubContractorId(dto.getSubContractorId());
+            imputation.setSubContractorFullName(subContractor.getFullName());
+        }
 
-        imputation.setSubContractorId(dto.getSubContractorId());
-        imputation.setSubContractorFullName(subContractor.getFullName());
         imputation.setId(dto.getId());
         imputation.setFillingPercentage(dto.getFillingPercentage());
         imputation.setObservation(dto.getObservation());
@@ -103,10 +107,10 @@ public class TripImputationServiceImpl implements TripImputationService {
                 .orElseThrow(() -> new RuntimeException("TripImputation not found with id: " + dto.getId()));
 
         // Update the fields
-        Affaire affaire = affaireService.getAffaireById(dto.getAffaireId(), token);
+        Marche marche = affaireService.getAffaireById(dto.getAffaireId(), token);
 
         imputation.setAffaireId(dto.getAffaireId());
-        imputation.setAffaireCode(affaire.getCode());
+        imputation.setAffaireCode(marche.getCode());
 
 
         if (dto.getClientId() != null) {
@@ -121,10 +125,18 @@ public class TripImputationServiceImpl implements TripImputationService {
             imputation.setLot(lot);
         }
 
-        SubContractor subContractor = subContractorService.byId(dto.getSubContractorId(), token);
+        if (dto.getSubContractorId() != null) {
+            SubContractor subContractor = subContractorService.byId(dto.getSubContractorId(), token);
+            if(subContractor != null) {
+                new EntityNotFoundException("Client not found");
+            }
+            imputation.setSubContractorId(dto.getSubContractorId());
+            imputation.setSubContractorFullName(subContractor.getFullName());
+        }
 
-        imputation.setSubContractorId(dto.getSubContractorId());
-        imputation.setSubContractorFullName(subContractor.getFullName());
+
+
+
         imputation.setId(dto.getId());
         imputation.setFillingPercentage(dto.getFillingPercentage());
         imputation.setObservation(dto.getObservation());

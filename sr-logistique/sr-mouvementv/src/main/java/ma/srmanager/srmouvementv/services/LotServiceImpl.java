@@ -1,7 +1,7 @@
 package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.LotDTO;
-import ma.srmanager.srmouvementv.model.Lot;
+import ma.srmanager.srmouvementv.entities.Lot;
 import ma.srmanager.srmouvementv.repositories.LotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

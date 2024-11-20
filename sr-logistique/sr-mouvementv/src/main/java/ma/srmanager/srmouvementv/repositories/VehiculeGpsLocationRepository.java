@@ -1,6 +1,6 @@
 package ma.srmanager.srmouvementv.repositories;
 
-import ma.srmanager.srmouvementv.model.VehiculeGpsLocation;
+import ma.srmanager.srmouvementv.entities.VehiculeGpsLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

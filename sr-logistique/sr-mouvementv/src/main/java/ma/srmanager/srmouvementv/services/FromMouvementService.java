@@ -1,10 +1,7 @@
 package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.FromMouvementRequestDTO;
-import ma.srmanager.srmouvementv.dto.FromMouvementUpdateDTO;
-import ma.srmanager.srmouvementv.dto.TripImputationRequestDTO;
-import ma.srmanager.srmouvementv.model.FromMouvement;
-import ma.srmanager.srmouvementv.model.VehiculeRoute;
+import ma.srmanager.srmouvementv.entities.FromMouvement;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,7 +19,6 @@ public interface FromMouvementService {
      List<FromMouvement> updateFromMouvement(FromMouvementRequestDTO fromMouvementRequestDTO, String token) throws IOException;
 
      List<FromMouvement> saveFromMouvement(FromMouvementRequestDTO dto, String token) throws IOException;
-
 
      void deleteById(Long id);
 

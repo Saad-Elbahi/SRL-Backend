@@ -2,7 +2,7 @@ package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
 import ma.srmanager.srmouvementv.dto.TripImputationRequestDTO;
-import ma.srmanager.srmouvementv.model.TripImputation;
+import ma.srmanager.srmouvementv.entities.TripImputation;
 import ma.srmanager.srmouvementv.services.TripImputationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

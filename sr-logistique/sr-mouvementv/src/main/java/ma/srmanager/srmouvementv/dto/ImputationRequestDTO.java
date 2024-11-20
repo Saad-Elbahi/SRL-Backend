@@ -1,7 +1,6 @@
 package ma.srmanager.srmouvementv.dto;
 
 import lombok.Data;
-import ma.srmanager.srmouvementv.model.TripImputation;
 
 import java.util.List;
 @Data

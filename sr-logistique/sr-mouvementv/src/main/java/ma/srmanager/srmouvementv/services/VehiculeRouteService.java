@@ -1,12 +1,14 @@
 package ma.srmanager.srmouvementv.services;
 
-import ma.srmanager.srmouvementv.dto.*;
-import ma.srmanager.srmouvementv.model.*;
-import ma.srmanager.srmouvementv.models.Affaire;
+import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
+import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
+import ma.srmanager.srmouvementv.dto.UpdateMouvementDTO;
+import ma.srmanager.srmouvementv.entities.VehiculeGpsLocation;
+import ma.srmanager.srmouvementv.entities.VehiculeRoute;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public interface VehiculeRouteService {
 
@@ -46,6 +48,9 @@ public interface VehiculeRouteService {
      List<VehiculeRoute> updateFillingPercentage(UpdateFillingPercentageDTO dto);
 
     Map<LocalDate, Double> performanceOverTime(PerformanceOverTimeRequestDTO dto);
+
+     List<VehiculeRoute> getVehiculeRoutesWithStatus();
+
 
 
 }

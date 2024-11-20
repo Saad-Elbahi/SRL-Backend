@@ -1,7 +1,7 @@
 package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.ClientDTO;
-import ma.srmanager.srmouvementv.model.Client;
+import ma.srmanager.srmouvementv.entities.Client;
 import ma.srmanager.srmouvementv.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

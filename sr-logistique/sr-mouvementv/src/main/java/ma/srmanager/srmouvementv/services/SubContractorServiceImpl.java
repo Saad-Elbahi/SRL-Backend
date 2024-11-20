@@ -1,37 +1,25 @@
 package ma.srmanager.srmouvementv.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import ma.srmanager.srmouvementv.dto.SoustraitantDTO;
 import ma.srmanager.srmouvementv.models.SubContractor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import ma.srmanager.srmouvementv.openfeign.SunContractorQueryRestClient;
 import org.springframework.stereotype.Service;
 
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
+
 public class SubContractorServiceImpl implements SubContractorService {
 
 
-    private final ObjectMapper objectMapper;
-    private final RestTemplate restTemplate;
 
-    @Autowired
-    public SubContractorServiceImpl(ObjectMapper objectMapper, RestTemplate restTemplate) {
-        this.objectMapper = objectMapper;
-        this.restTemplate = restTemplate;
-    }
+    private final SunContractorQueryRestClient sunContractorQueryRestClient;
+
+
 
     private SoustraitantDTO convertToDto(SubContractor subContractor) {
         SoustraitantDTO dto = new SoustraitantDTO();
@@ -51,9 +39,12 @@ public class SubContractorServiceImpl implements SubContractorService {
     public List<SubContractor> getAllSoustraitants(String token, Long projectId) {
         // Updated URL to fetch all subcontractors
         //String url = "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/all?projectId=" + projectId;
-        String url =  "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byProject/" + projectId;
+        //String url =  "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byProject/" + projectId;
+        //String url =  SrUtils.soustraitanceHost +"/subcontractors/queries/byProject/" + projectId;
 
-        HttpHeaders headers = new HttpHeaders();
+        return sunContractorQueryRestClient.byProject(projectId, token);
+
+        /*HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
@@ -63,8 +54,8 @@ public class SubContractorServiceImpl implements SubContractorService {
             // Make the HTTP GET request to the external API
             ResponseEntity<SubContractor[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, SubContractor[].class);
 
-            System.out.println("Response Status Code: " + response.getStatusCode());
-            System.out.println("Response Body: " + Arrays.toString(response.getBody()));
+            //System.out.println("Response Status Code: " + response.getStatusCode());
+            //System.out.println("Response Body: " + Arrays.toString(response.getBody()));
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 return Arrays.stream(response.getBody())
@@ -80,17 +71,20 @@ public class SubContractorServiceImpl implements SubContractorService {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
-        }
+        }*/
     }
 
 
 
     @Override
-    public SubContractor byId(Long id,String token) {
+    public SubContractor byId(Long id, String token) {
         //String url = "https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byId/"+id;
-        String url ="https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byId/"+id;
+        //String url ="https://node118212-env-sr-str.jcloud-ver-jpe.ik-server.com/subcontractors/queries/byId/"+id;
+        //String url = SrUtils.soustraitanceHost +"/subcontractors/queries/byId/"+id;
 
-        HttpHeaders headers = new HttpHeaders();
+        return sunContractorQueryRestClient.byId(id, token).orElse(null);
+
+        /*HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
@@ -106,7 +100,7 @@ public class SubContractorServiceImpl implements SubContractorService {
 
                 //soustraitantRepository.saveAll(soustraitants);
 
-                return response.getBody();
+                return Optional.ofNullable(response.getBody());
             } else {
                 return null;
             }
@@ -114,7 +108,7 @@ public class SubContractorServiceImpl implements SubContractorService {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
+        }*/
     }
 
 

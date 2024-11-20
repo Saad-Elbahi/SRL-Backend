@@ -1,6 +1,6 @@
 package ma.srmanager.srmouvementv.repositories;
 
-import ma.srmanager.srmouvementv.model.Chauffeur;
+import ma.srmanager.srmouvementv.entities.Chauffeur;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

@@ -3,10 +3,12 @@ package ma.srmanager.srmouvementv.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.dto.*;
-import ma.srmanager.srmouvementv.model.*;
-import ma.srmanager.srmouvementv.models.Affaire;
-import ma.srmanager.srmouvementv.models.SubContractor;
+import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
+import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
+import ma.srmanager.srmouvementv.dto.UpdateMouvementDTO;
+import ma.srmanager.srmouvementv.entities.TripImputation;
+import ma.srmanager.srmouvementv.entities.VehiculeGpsLocation;
+import ma.srmanager.srmouvementv.entities.VehiculeRoute;
 import ma.srmanager.srmouvementv.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -379,6 +381,31 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
                         LinkedHashMap::new // Maintain order after sorting
                 ));
     }
+
+    public List<VehiculeRoute> getVehiculeRoutesWithStatus() {
+        List<VehiculeRoute> routes = vehiculeRouteRepository.findAll();
+        for (VehiculeRoute route : routes) {
+            route.setStatus(calculateStatus(route));
+        }
+        return routes;
+    }
+
+    private String calculateStatus(VehiculeRoute route) {
+        boolean hasFromMouvement = route.getFromMouvements() != null && !route.getFromMouvements().isEmpty();
+        boolean hasImputations = route.getImputations() != null && !route.getImputations().isEmpty();
+
+        if (hasFromMouvement && hasImputations) {
+            return "Complet";
+        } else if (hasFromMouvement && !hasImputations) {
+            return "Imputation en attente";
+        } else if (!hasFromMouvement && !hasImputations) {
+            return "Manquant";
+        } else {
+            return "Inconnu";
+        }
+
+    }
+
 
     @Override
     public List<Object[]> getTotalCostPerTripByMonth() {

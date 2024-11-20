@@ -2,12 +2,12 @@ package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.dto.AffaireDTO;
-import ma.srmanager.srmouvementv.models.Affaire;
+import ma.srmanager.srmouvementv.models.Marche;
 import ma.srmanager.srmouvementv.services.AffaireService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,7 +47,7 @@ public class AffaireController {
             affaireService.deleteAffaire(id);
         }*/
     @GetMapping("/affaires")
-    public List<Affaire> getAffaire(@RequestHeader(name = "Authorization") String token) throws IOException {
+    public List<Marche> getAffaire(@RequestHeader(name = "Authorization") String token) throws IOException {
         log.info(token);
         return affaireService.getALLAffaire(token);
     }

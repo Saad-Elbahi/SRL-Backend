@@ -1,8 +1,8 @@
 package ma.srmanager.srmouvementv.dto;
 
 import lombok.Data;
-import ma.srmanager.srmouvementv.model.FromMouvement;
-import ma.srmanager.srmouvementv.model.TripImputation;
+import ma.srmanager.srmouvementv.entities.FromMouvement;
+import ma.srmanager.srmouvementv.entities.TripImputation;
 
 import java.util.List;
 @Data

@@ -1,7 +1,6 @@
 package ma.srmanager.srmouvementv.repositories;
 
-import ma.srmanager.srmouvementv.models.Affaire;
-import ma.srmanager.srmouvementv.model.TripImputation;
+import ma.srmanager.srmouvementv.entities.TripImputation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

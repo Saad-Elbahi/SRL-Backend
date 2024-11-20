@@ -1,7 +1,6 @@
 package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.ClientDTO;
-import ma.srmanager.srmouvementv.model.Client;
 
 import java.util.List;
 import java.util.Optional;

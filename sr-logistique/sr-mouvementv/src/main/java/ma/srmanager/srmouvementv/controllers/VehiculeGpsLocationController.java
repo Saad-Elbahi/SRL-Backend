@@ -4,7 +4,7 @@ package ma.srmanager.srmouvementv.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.AssociateChauffeurAndPriceDTO;
-import ma.srmanager.srmouvementv.model.VehiculeGpsLocation;
+import ma.srmanager.srmouvementv.entities.VehiculeGpsLocation;
 import ma.srmanager.srmouvementv.services.VehiculeGpsLocationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

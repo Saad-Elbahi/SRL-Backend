@@ -3,18 +3,14 @@ package ma.srmanager.srmouvementv.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import ma.srmanager.srmouvementv.models.Affaire;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import ma.srmanager.coreapi.enums.marche.ProjetStatus;
+import ma.srmanager.srmouvementv.models.Marche;
+import ma.srmanager.srmouvementv.openfeign.MarcheQueryRestClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -25,6 +21,7 @@ public class AffaireServiceImpl implements AffaireService {
     private ObjectMapper objectMapper;
 
     private RestTemplate restTemplate;
+    private MarcheQueryRestClient marcheQueryRestClient;
 
 //    @Override
 //    public List<Affaire> getAllAffaire() {
@@ -43,28 +40,29 @@ public class AffaireServiceImpl implements AffaireService {
 //    }
 
     @Override
-    public List<Affaire> getALLAffaire(String token) throws IOException {
+    public List<Marche> getALLAffaire(String token) throws IOException {
         //String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byStatus/EN_COURS";
-        String url =  "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byStatus/EN_COURS";
+        //String url =  "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byStatus/EN_COURS";
+        return marcheQueryRestClient.byStatus(ProjetStatus.EN_COURS.name(), token);
 
-        HttpHeaders headers = new HttpHeaders();
+        /*HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
             System.out.println("Sending request to external API...");
 
-            ResponseEntity<Affaire[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, Affaire[].class);
+            ResponseEntity<Marche[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, Marche[].class);
 
             System.out.println("Response Status Code: " + response.getStatusCode());
             System.out.println("Response Body: " + Arrays.toString(response.getBody()));
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                List<Affaire> affaires = Arrays.asList(response.getBody());
+                List<Marche> marches = Arrays.asList(response.getBody());
 
                 //affaireRepository.saveAll(affaires);
 
-                return affaires;
+                return marches;
             } else {
                 return Collections.emptyList();
             }
@@ -72,22 +70,23 @@ public class AffaireServiceImpl implements AffaireService {
         } catch (Exception e) {
             log.info(e.getMessage());
             return Collections.emptyList();
-        }
+        }*/
     }
 
     @Override
-    public Affaire getAffaireById(Long id, String token)  {
+    public Marche getAffaireById(Long id, String token)  {
         //String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byId/"+id;
-        String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byId/"+id;
+        //String url = "https://sr-affaires.jcloud-ver-jpe.ik-server.com/marches/queries/byId/"+id;
+        return marcheQueryRestClient.byId(id, token).orElse(null);
 
-        HttpHeaders headers = new HttpHeaders();
+        /*HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
             System.out.println("Sending request to external API...");
 
-            ResponseEntity<Affaire> response = restTemplate.exchange(url, HttpMethod.GET, entity, Affaire.class);
+            ResponseEntity<Marche> response = restTemplate.exchange(url, HttpMethod.GET, entity, Marche.class);
 
             System.out.println("Response Status Code: " + response.getStatusCode());
             System.out.println("Response Body: " + response.toString());
@@ -104,7 +103,7 @@ public class AffaireServiceImpl implements AffaireService {
         } catch (Exception e) {
             log.info(e.getMessage());
             return null;
-        }
+        }*/
     }
 //    @Transactional
 //    @Override

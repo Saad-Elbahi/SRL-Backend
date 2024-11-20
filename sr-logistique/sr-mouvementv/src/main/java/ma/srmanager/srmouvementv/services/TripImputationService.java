@@ -1,7 +1,7 @@
 package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.TripImputationRequestDTO;
-import ma.srmanager.srmouvementv.model.TripImputation;
+import ma.srmanager.srmouvementv.entities.TripImputation;
 
 import java.io.IOException;
 import java.util.List;

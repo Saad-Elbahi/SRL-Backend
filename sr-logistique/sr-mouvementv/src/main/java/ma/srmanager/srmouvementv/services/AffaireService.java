@@ -1,7 +1,6 @@
 package ma.srmanager.srmouvementv.services;
 
-import ma.srmanager.srmouvementv.dto.AffaireDTO;
-import ma.srmanager.srmouvementv.models.Affaire;
+import ma.srmanager.srmouvementv.models.Marche;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,9 +8,9 @@ import java.util.List;
 public interface AffaireService {
     
    //  List<Affaire> getAllAffaire() ;
-   List<Affaire> getALLAffaire(String token) throws IOException;
+   List<Marche> getALLAffaire(String token) throws IOException;
 
-    Affaire getAffaireById(Long id,String token);
+    Marche getAffaireById(Long id, String token);
 
   //   List<Affaire> saveAffaireFromApi() throws IOException ;
 

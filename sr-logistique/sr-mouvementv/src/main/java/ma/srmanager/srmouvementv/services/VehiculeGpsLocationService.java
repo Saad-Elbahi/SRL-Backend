@@ -1,7 +1,8 @@
 package ma.srmanager.srmouvementv.services;
 
 import ma.srmanager.srmouvementv.dto.AssociateChauffeurAndPriceDTO;
-import ma.srmanager.srmouvementv.model.VehiculeGpsLocation;
+import ma.srmanager.srmouvementv.entities.VehiculeGpsLocation;
+
 import java.util.List;
 
 public interface VehiculeGpsLocationService {

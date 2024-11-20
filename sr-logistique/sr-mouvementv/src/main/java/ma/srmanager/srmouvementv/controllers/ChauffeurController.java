@@ -2,7 +2,7 @@ package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.model.Chauffeur;
+import ma.srmanager.srmouvementv.entities.Chauffeur;
 import ma.srmanager.srmouvementv.services.ChauffeurService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package ma.srmanager.srmouvementv.repositories;
 
-import ma.srmanager.srmouvementv.model.VehiculeRoute;
+import ma.srmanager.srmouvementv.entities.VehiculeRoute;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

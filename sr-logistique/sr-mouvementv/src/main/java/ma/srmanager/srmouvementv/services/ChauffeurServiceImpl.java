@@ -1,13 +1,10 @@
 package ma.srmanager.srmouvementv.services;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.model.Chauffeur;
-import ma.srmanager.srmouvementv.model.Fournisseur;
+import ma.srmanager.coreapi.base.SrUtils;
+import ma.srmanager.srmouvementv.entities.Chauffeur;
 import ma.srmanager.srmouvementv.repositories.ChauffeurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +24,8 @@ public class ChauffeurServiceImpl implements ChauffeurService {
     @Autowired
     private ChauffeurRepository chauffeurRepository;
 
-    private static final  String fileUploadDir = System.getProperty("user.home") + "/Desktop/frontend/src/assets/images";
+    //private static final  String fileUploadDir = System.getProperty("user.home") + "/Desktop/frontend/src/assets/images";
+    //private static final  String fileUploadDir = SrUtils.fileUploadDir  ;
 
 
     @Override
@@ -37,7 +35,7 @@ public class ChauffeurServiceImpl implements ChauffeurService {
         try {
             if (!file.isEmpty()) {
                 log.info("saveChauffeur 2");
-                log.info(fileUploadDir);
+                log.info(SrUtils.fileUploadDir );
 
                 String fileName = file.getOriginalFilename();
                 String fileExtension = "";
@@ -53,7 +51,7 @@ public class ChauffeurServiceImpl implements ChauffeurService {
                         fileExtension.equalsIgnoreCase(".tiff")) {
 
 
-                    Path filePath = Paths.get(fileUploadDir + "/avatars/" + fileName);
+                    Path filePath = Paths.get(SrUtils.fileUploadDir  + "/avatars/" + fileName);
                     Files.createDirectories(filePath.getParent());
                     Files.write(filePath, file.getBytes());
                     chauffeur.setImgPath("/assets/images/avatars/" + fileName);
@@ -97,7 +95,7 @@ public class ChauffeurServiceImpl implements ChauffeurService {
     @Override
     public List<Chauffeur> updateChauffeur(Long id, Chauffeur chauffeurDetails, MultipartFile file) throws IOException {
         log.info("updateChauffeur id => " + chauffeurDetails.getId());
-        log.info("uploadDir => " + fileUploadDir);
+        log.info("uploadDir => " + SrUtils.fileUploadDir );
 
         try {
             Optional<Chauffeur> optionalChauffeur = chauffeurRepository.findById(id);
@@ -128,7 +126,7 @@ public class ChauffeurServiceImpl implements ChauffeurService {
                             fileExtension.equalsIgnoreCase(".bmp") ||
                             fileExtension.equalsIgnoreCase(".tiff")) {
 
-                        String filePath = fileUploadDir + "/avatars/" + fileName;
+                        String filePath = SrUtils.fileUploadDir  + "/avatars/" + fileName;
                         Path path = Paths.get(filePath);
 
                         Files.createDirectories(path.getParent());

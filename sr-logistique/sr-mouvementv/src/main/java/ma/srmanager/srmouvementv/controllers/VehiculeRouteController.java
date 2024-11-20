@@ -1,20 +1,18 @@
 package ma.srmanager.srmouvementv.controllers;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.srmanager.srmouvementv.dto.*;
-import ma.srmanager.srmouvementv.model.*;
+import ma.srmanager.srmouvementv.dto.PerformanceOverTimeRequestDTO;
+import ma.srmanager.srmouvementv.dto.UpdateFillingPercentageDTO;
+import ma.srmanager.srmouvementv.dto.UpdateMouvementDTO;
+import ma.srmanager.srmouvementv.entities.TripImputation;
+import ma.srmanager.srmouvementv.entities.VehiculeRoute;
 import ma.srmanager.srmouvementv.repositories.TripImputationRepository;
 import ma.srmanager.srmouvementv.services.VehiculeRouteService;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -156,5 +154,10 @@ public class VehiculeRouteController {
         return vehiculeRouteService.updateFillingPercentage(dto);
         //return ResponseEntity.ok(updatedRoute);
     }
-
+//status vehiculeRoute
+@GetMapping("/statusVehiculeRoute")
+public ResponseEntity<List<VehiculeRoute>> getVehiculeRoutes() {
+    List<VehiculeRoute> routes = vehiculeRouteService.getVehiculeRoutesWithStatus();
+    return ResponseEntity.ok(routes);
+}
 }

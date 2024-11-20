@@ -3,16 +3,17 @@ package ma.srmanager.srmouvementv.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.FromMouvementRequestDTO;
-import ma.srmanager.srmouvementv.model.Fournisseur;
-import ma.srmanager.srmouvementv.model.FromMouvement;
-import ma.srmanager.srmouvementv.model.VehiculeRoute;
-import ma.srmanager.srmouvementv.models.Affaire;
-import ma.srmanager.srmouvementv.repositories.*;
+import ma.srmanager.srmouvementv.entities.Fournisseur;
+import ma.srmanager.srmouvementv.entities.FromMouvement;
+import ma.srmanager.srmouvementv.entities.VehiculeRoute;
+import ma.srmanager.srmouvementv.models.Marche;
+import ma.srmanager.srmouvementv.repositories.FournisseurRepository;
+import ma.srmanager.srmouvementv.repositories.FromMouvementRepository;
+import ma.srmanager.srmouvementv.repositories.VehiculeRouteRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +57,6 @@ public class FromMouvementServiceImpl implements FromMouvementService {
     }
 
 
-
     @Override
     public void deleteById(Long id) {
         fromMouvementRepository.deleteById(id);
@@ -66,6 +66,7 @@ public class FromMouvementServiceImpl implements FromMouvementService {
     public List<FromMouvement> getFromMouvementsByVehiculeRouteId(Long vehiculeRouteId) {
         return fromMouvementRepository.findByVehiculeRouteId(vehiculeRouteId);
     }
+
     @Override
     public List<FromMouvement> updateFromMouvement(FromMouvementRequestDTO fromMouvementRequestDTO, String token) throws IOException {
 
@@ -83,32 +84,32 @@ public class FromMouvementServiceImpl implements FromMouvementService {
 
         // Handle Affaire assignment
         if (fromMouvementRequestDTO.getAffaireId() != null) {
-            Affaire affaire = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
-            if (affaire == null) {
+            Marche marche = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
+            if (marche == null) {
                 throw new EntityNotFoundException("Affaire not found");
             }
-            existingFromMouvement.setAffaireId(affaire.getId());
-            existingFromMouvement.setAffaireCode(affaire.getCode());
+            existingFromMouvement.setAffaireId(marche.getId());
+            existingFromMouvement.setAffaireCode(marche.getCode());
 
-            existingFromMouvement.setFournisseurid(0L); // Set to default value when not used
-            existingFromMouvement.setFournisseurName("");
+            existingFromMouvement.setFournisseurId(null); // Set to default value when not used
+            existingFromMouvement.setFournisseurName(null);
         } else {
-            existingFromMouvement.setAffaireId(0L); // Set to default value when not used
-            existingFromMouvement.setAffaireCode("");
+            existingFromMouvement.setAffaireId(null); // Set to default value when not used
+            existingFromMouvement.setAffaireCode(null);
         }
 
         // Handle Fournisseur assignment
         if (fromMouvementRequestDTO.getFournisseurId() != null) {
             Fournisseur fournisseur = fournisseurRepository.findById(fromMouvementRequestDTO.getFournisseurId())
                     .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
-            existingFromMouvement.setFournisseurid(fournisseur.getId());
+            existingFromMouvement.setFournisseurId(fournisseur.getId());
             existingFromMouvement.setFournisseurName(fournisseur.getIntituleFournisseur());
 
-            existingFromMouvement.setAffaireId(0L); // Set to default value when not used
-            existingFromMouvement.setAffaireCode("");
+            existingFromMouvement.setAffaireId(null); // Set to default value when not used
+            existingFromMouvement.setAffaireCode(null);
         } else {
-            existingFromMouvement.setFournisseurid(0L); // Set to default value when not used
-            existingFromMouvement.setFournisseurName("");
+            existingFromMouvement.setFournisseurId(null); // Set to default value when not used
+            existingFromMouvement.setFournisseurName(null);
         }
 
         existingFromMouvement.setBl(fromMouvementRequestDTO.getBl());
@@ -135,15 +136,15 @@ public class FromMouvementServiceImpl implements FromMouvementService {
         }
 
         if (fromMouvementRequestDTO.getAffaireId() != null) {
-            Affaire affaire = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
-            if (affaire == null) {
+            Marche marche = affaireService.getAffaireById(fromMouvementRequestDTO.getAffaireId(), token);
+            if (marche == null) {
                 throw new EntityNotFoundException("Affaire not found");
             }
-            fromMouvement.setAffaireId(affaire.getId());
-            fromMouvement.setAffaireCode(affaire.getCode());
+            fromMouvement.setAffaireId(marche.getId());
+            fromMouvement.setAffaireCode(marche.getCode());
 
             // Reset Fournisseur fields
-            fromMouvement.setFournisseurid(0L);
+            fromMouvement.setFournisseurId(0L);
             fromMouvement.setFournisseurName("");
         }
 
@@ -151,7 +152,7 @@ public class FromMouvementServiceImpl implements FromMouvementService {
         if (fromMouvementRequestDTO.getFournisseurId() != null) {
             Fournisseur fournisseur = fournisseurRepository.findById(fromMouvementRequestDTO.getFournisseurId())
                     .orElseThrow(() -> new EntityNotFoundException("Fournisseur not found"));
-            fromMouvement.setFournisseurid(fournisseur.getId());
+            fromMouvement.setFournisseurId(fournisseur.getId());
             fromMouvement.setFournisseurName(fournisseur.getIntituleFournisseur());
 
             // Reset Affaire fields

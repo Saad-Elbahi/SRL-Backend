@@ -3,15 +3,11 @@ package ma.srmanager.srmouvementv.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.srmanager.srmouvementv.dto.FromMouvementRequestDTO;
-import ma.srmanager.srmouvementv.dto.FromMouvementUpdateDTO;
-import ma.srmanager.srmouvementv.dto.TripImputationRequestDTO;
-import ma.srmanager.srmouvementv.model.FromMouvement;
-import ma.srmanager.srmouvementv.model.TripImputation;
+import ma.srmanager.srmouvementv.entities.FromMouvement;
 import ma.srmanager.srmouvementv.services.FromMouvementService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
@@ -76,9 +72,8 @@ public class FromMouvementController {
         }
     }
     @PutMapping("/updateMouvement")
-    public ResponseEntity<List<FromMouvement>> updateFromMouvement(
-            @RequestBody FromMouvementRequestDTO fromMouvementRequestDTO,
-            @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<FromMouvement>> updateFromMouvement(@RequestBody FromMouvementRequestDTO fromMouvementRequestDTO,
+                                                                   @RequestHeader("Authorization") String token) {
         try {
             List<FromMouvement> updatedFromMouvements = fromMouvementService.updateFromMouvement(fromMouvementRequestDTO, token);
             return new ResponseEntity<>(updatedFromMouvements, HttpStatus.OK);

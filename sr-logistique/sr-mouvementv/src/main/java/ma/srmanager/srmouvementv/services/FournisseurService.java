@@ -1,8 +1,6 @@
 package ma.srmanager.srmouvementv.services;
 
-import ma.srmanager.srmouvementv.dto.ClientDTO;
 import ma.srmanager.srmouvementv.dto.FournisseurDTO;
-import ma.srmanager.srmouvementv.model.Fournisseur;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
