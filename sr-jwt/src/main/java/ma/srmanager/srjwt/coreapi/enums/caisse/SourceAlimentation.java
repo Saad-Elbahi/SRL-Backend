@@ -1,0 +1,19 @@
+package ma.srmanager.srjwt.coreapi.enums.caisse;
+
+public enum SourceAlimentation {
+    CAISSE_CENTRALE,
+    STRNL,
+    SNL,
+    STCNL,
+    RETOUR_CAISSE_IT,
+    RETOUR_CAISSE_DT,
+    RETOUR_CAISSE_DG,
+    RETOUR_CAISSE_EXPLOITATION,
+    RETOUR_CAISSE_CHANTIER,
+    RETOUR_FRAIS_LOGISTIQUE,
+    RETOUR_FRAIS_JURIDIQUE,
+    RETOUR_FRAIS_DEP,
+    RETOUR_FRAIS_ENR,
+    VENTE_ESPECE,
+    AUTRE;
+}
