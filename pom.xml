@@ -22,7 +22,13 @@
 
         <module>sr-jwt</module>
         <module>sr-logistique/sr-mouvementv</module>
+        <module>core-api</module>
 
+        <module>sr-sous-traitance/sr-sous-traitance</module>
+        <module>sr-params/sr-params</module>
+        <module>sr-notification</module>
+        <module>sr-mail</module>
+        <module>sr-affaires/sr-affaires</module>
     </modules>
 
 
