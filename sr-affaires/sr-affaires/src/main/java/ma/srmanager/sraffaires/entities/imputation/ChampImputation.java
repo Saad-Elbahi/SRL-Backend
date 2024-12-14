@@ -14,7 +14,6 @@ import javax.persistence.*;
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING, length = 255)
 public class ChampImputation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long numero;
     private String code;

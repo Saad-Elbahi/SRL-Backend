@@ -29,6 +29,7 @@
         <module>sr-notification</module>
         <module>sr-mail</module>
         <module>sr-affaires/sr-affaires</module>
+        <module>sr-logistique/sr-engin</module>
     </modules>
 
 

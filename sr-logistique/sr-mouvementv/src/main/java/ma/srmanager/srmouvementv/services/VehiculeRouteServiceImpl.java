@@ -63,17 +63,8 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
     private static final String gpsApiKey = "88918E46B26489F0ECDC7966541FE2A9";
     private static final String gpsBaseUrl = "https://rouandigps.com/api/api.php";
 
-    @Transactional
-    @Override
-    public List<VehiculeRoute> getAllVehiculeRoutes() {
-        /* try {
-            String jsonResponse = objectMapper.writeValueAsString(mouvements);
-            log.info("JSON Response: " + jsonResponse);
-        } catch (JsonProcessingException e) {
-            log.error("Error processing JSON", e);
-        }*/
-        return vehiculeRouteRepository.findAll();
-    }
+
+
 
     @Transactional
     @Override
@@ -381,31 +372,15 @@ public class VehiculeRouteServiceImpl implements VehiculeRouteService {
                         LinkedHashMap::new // Maintain order after sorting
                 ));
     }
-
-    public List<VehiculeRoute> getVehiculeRoutesWithStatus() {
+    @Override
+    public List<VehiculeRoute> getAllVehiculeRoutes() {
         List<VehiculeRoute> routes = vehiculeRouteRepository.findAll();
         for (VehiculeRoute route : routes) {
-            route.setStatus(calculateStatus(route));
+            route.setFromStatus( route.getFromMouvements() != null && !route.getFromMouvements().isEmpty());
+            route.setImputationStatus(route.getImputations() != null && !route.getImputations().isEmpty());
         }
         return routes;
     }
-
-    private String calculateStatus(VehiculeRoute route) {
-        boolean hasFromMouvement = route.getFromMouvements() != null && !route.getFromMouvements().isEmpty();
-        boolean hasImputations = route.getImputations() != null && !route.getImputations().isEmpty();
-
-        if (hasFromMouvement && hasImputations) {
-            return "Complet";
-        } else if (hasFromMouvement && !hasImputations) {
-            return "Imputation en attente";
-        } else if (!hasFromMouvement && !hasImputations) {
-            return "Manquant";
-        } else {
-            return "Inconnu";
-        }
-
-    }
-
 
     @Override
     public List<Object[]> getTotalCostPerTripByMonth() {

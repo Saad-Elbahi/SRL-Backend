@@ -6,7 +6,7 @@ import lombok.Data;
 public class AssociateChauffeurAndPriceDTO {
     private Long vehiculeId;
     private Long chauffeurId;
-    private double costPerKm;
+    private Double costPerKm;
     private String model;
     private String name;
     private String device;

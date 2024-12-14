@@ -31,9 +31,9 @@ public class VehiculeRouteController {
 
 
     @GetMapping("/getAllVehiculeRoutes")
-    public List<VehiculeRoute> getAllVehiculeRoutes() {
-        log.info("getAllVehiculeRoutes");
-        return vehiculeRouteService.getAllVehiculeRoutes();
+    public ResponseEntity<List<VehiculeRoute>> getVehiculeRoutes() {
+        List<VehiculeRoute> routes = vehiculeRouteService.getAllVehiculeRoutes();
+        return ResponseEntity.ok(routes);
     }
 
     @GetMapping("/getVehiculeRouteById/{id}")
@@ -155,9 +155,5 @@ public class VehiculeRouteController {
         //return ResponseEntity.ok(updatedRoute);
     }
 //status vehiculeRoute
-@GetMapping("/statusVehiculeRoute")
-public ResponseEntity<List<VehiculeRoute>> getVehiculeRoutes() {
-    List<VehiculeRoute> routes = vehiculeRouteService.getVehiculeRoutesWithStatus();
-    return ResponseEntity.ok(routes);
-}
+
 }
