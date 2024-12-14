@@ -48,7 +48,16 @@ public class EnginGpsLocationController {
         return enginGpsLocationService.getAllVehiculeGps();
 
     }
-
+    @DeleteMapping("/deleteEngin/{enginId}")
+    public List<EnginGpsLocation> deleteEngin(@PathVariable Long enginId) {
+        try {
+            enginGpsLocationService.deleteEngin(enginId);
+            log.info(enginId.toString());
+        } catch (RuntimeException e) {
+            log.info(e.getMessage());
+        }
+        return getAllEnginGps();
+    }
 
 //    @GetMapping("/fetchRoutesEngin")
 //    public void fetchAndSaveAllObjectRoutesEngin(

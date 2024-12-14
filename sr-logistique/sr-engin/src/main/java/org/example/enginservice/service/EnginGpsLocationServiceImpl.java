@@ -96,6 +96,11 @@ public class EnginGpsLocationServiceImpl implements EnginGpsLocationService {
         return enginGpsLocationRepository.save(enginGpsLocation);
     }
 
+    @Override
+    public void deleteEngin(Long enginId) {
+        enginGpsLocationRepository.deleteById(enginId);
+    }
+
 
 }
 

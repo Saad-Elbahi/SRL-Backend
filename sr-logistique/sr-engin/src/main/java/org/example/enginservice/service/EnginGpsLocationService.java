@@ -10,4 +10,6 @@ public interface EnginGpsLocationService {
     EnginGpsLocation updateEnginGpsLocation(EnginGpsDTO dto);
     List<EnginGpsLocation> getAllVehiculeGps();
     EnginGpsLocation createEnginLocation(EnginGpsDTO dto);
+    void deleteEngin(Long enginId);
+
 }
