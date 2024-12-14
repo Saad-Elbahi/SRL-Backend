@@ -49,7 +49,6 @@ public interface VehiculeRouteService {
 
     Map<LocalDate, Double> performanceOverTime(PerformanceOverTimeRequestDTO dto);
 
-     List<VehiculeRoute> getVehiculeRoutesWithStatus();
 
 
 

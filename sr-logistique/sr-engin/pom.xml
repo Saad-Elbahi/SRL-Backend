@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <artifactId>srmanager</artifactId>
         <groupId>ma.srmanager</groupId>
@@ -10,17 +9,13 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>sr-params</artifactId>
+    <artifactId>sr-engin</artifactId>
     <version>3.0.1</version>
-    <name>sr-params</name>
-    <description>sr-params</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-    <packaging>jar</packaging>
+    <name>sr-engin</name>
+    <description>sr-engin</description>
 
     <dependencies>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core-api</artifactId>
@@ -31,23 +26,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
-
-        <dependency>
-            <groupId>ma.srmanager</groupId>
-            <artifactId>core-api</artifactId>
-            <version>3.0.1</version>
-            <scope>compile</scope>
-        </dependency>
 
     </dependencies>
-
 
     <build>
         <plugins>
@@ -65,14 +51,38 @@
                 </configuration>
             </plugin>
 
+            <!--   <plugin>
+                   <groupId>org.jetbrains.kotlin</groupId>
+                   <artifactId>kotlin-maven-plugin</artifactId>
+                   <version>${kotlin.version}</version>
+                   <executions>
+                       <execution>
+                           <id>compile</id>
+                           <phase>compile</phase>
+                           <goals>
+                               <goal>compile</goal>
+                           </goals>
+                       </execution>
+                       <execution>
+                           <id>test-compile</id>
+                           <phase>test-compile</phase>
+                           <goals>
+                               <goal>test-compile</goal>
+                           </goals>
+                       </execution>
+                   </executions>
+                   <configuration>
+                       <jvmTarget>1.8</jvmTarget>
+                   </configuration>
+               </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source> <!-- depending on your project -->
-                    <target>1.8</target> <!-- depending on your project -->
+                    <source>9</source> <!-- depending on your project -->
+                    <target>9</target> <!-- depending on your project -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -90,5 +100,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -1,11 +1,9 @@
-package ma.srmanager.srmail.security;
+package org.example.enginservice.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
-import ma.srmanager.srjwt.coreapi.jwt.JWTUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class JWTAuthorizationfilter extends OncePerRequestFilter {
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -40,21 +40,21 @@ public class JWTAuthorizationfilter extends OncePerRequestFilter {
         if (request.getMethod().equals("OPTIONS")) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else if (request.getRequestURI().equals("/login")
-                || request.getServletPath().equals(JWTUtil.PATH_REFRESH_TOKEN)) {
+                || request.getServletPath().equals(JwtTools.PATH_REFRESH_TOKEN)) {
             filterChain.doFilter(request, response);
             return;
         } else {
 
-            String authorizationToken = request.getHeader(JWTUtil.JWT_HEADER_NAME);
+            String authorizationToken = request.getHeader(JwtTools.JWT_HEADER_NAME);
 
-            if (authorizationToken != null && authorizationToken.startsWith(JWTUtil.JWT_HEADER_PREFIX)) {
+            if (authorizationToken != null && authorizationToken.startsWith(JwtTools.JWT_HEADER_PREFIX)) {
                 try {
-                    String token = authorizationToken.substring(JWTUtil.JWT_HEADER_PREFIX.length());
-                    Algorithm algo1 = Algorithm.HMAC256(JWTUtil.JWT_SECRET);
+                    String token = authorizationToken.substring(JwtTools.JWT_HEADER_PREFIX.length());
+                    Algorithm algo1 = Algorithm.HMAC256(JwtTools.JWT_SECRET);
                     JWTVerifier jwtVerifier = JWT.require(algo1).build();
                     DecodedJWT decodedJWT = jwtVerifier.verify(token);
                     String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim(JWTUtil.JWT_CLAIMS_ROLES).asArray(String.class);
+                    String[] roles = decodedJWT.getClaim(JwtTools.JWT_CLAIMS_ROLES).asArray(String.class);
 
 //                    System.out.println("username        "+username);
 //                    System.out.println("roles           "+roles);
@@ -70,7 +70,7 @@ public class JWTAuthorizationfilter extends OncePerRequestFilter {
                     filterChain.doFilter(request, response);
 
                 } catch (Exception e) {
-                    response.setHeader(JWTUtil.JWT_LIBELLE_ERROR_MESSAGE, e.getMessage());
+                    response.setHeader(JwtTools.JWT_LIBELLE_ERROR_MESSAGE, e.getMessage());
                     response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 }
             } else {

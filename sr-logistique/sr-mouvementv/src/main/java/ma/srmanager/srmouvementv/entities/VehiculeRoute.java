@@ -46,8 +46,8 @@ public class VehiculeRoute {
 
     private double fillingPercentage;
     private double fillingCost;
-    @Transient
-    private String status;
+    private Boolean fromStatus;
+    private Boolean imputationStatus;
 
     @PostLoad
     public void postLoadCalculations() {
@@ -66,12 +66,13 @@ public class VehiculeRoute {
     }
 
     public void calculateFillingCost() {
-        if (costPerTrip >0 && fillingPercentage >=0) {
+        if (costPerTrip > 0 && fillingPercentage >= 0) {
             fillingCost = costPerTrip * (fillingPercentage / 100);
         } else {
             fillingCost = 0.0;
         }
     }
+
     public void addFromMouvement(FromMouvement fromMouvement) {
         fromMouvements.add(fromMouvement);
         fromMouvement.setVehiculeRoute(this);
